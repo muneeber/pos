@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use Illuminate\Http\Request;
 
-class productController extends Controller
+class posController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        return view("pos");
+        
     }
 
     /**
@@ -19,7 +20,7 @@ class productController extends Controller
      */
     public function create()
     {
-        return view("products");
+        //
     }
 
     /**
@@ -27,20 +28,7 @@ class productController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
-        $vd=$request->validate([
-            "barcode" => "required",
-            "name" => "required",
-            "stock_quantity" => "required |numeric",
-            "sale_price" => "required |numeric",
-            "retail_price" => "required |numeric",
-        ]);
-        // dd($vd);
-        $response=Product::create($vd);
-        if ($response) {
-            return redirect()->back()->with("success","Product Entered Succesfully.");
-        }
-
+        //
     }
 
     /**
