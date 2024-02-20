@@ -1,4 +1,5 @@
 <x-app-layout>
+  
 <div class=" flex justify-center ">
   <form method="POST" action="{{ route('product.store') }}" class="w-full max-w-md shadow-md bg-white rounded p-4 my-6">
     @csrf
@@ -47,5 +48,16 @@
     </div>
   </form>
 </div>
-
+@php
+    if (Session::has("success")) {
+     echo"<script>$.notify('Product Entered Successfully', 'success');</script>";
+    }
+@endphp
+{{-- <script>
+$.notify("Hello World");
+$.notify("Access granted", "success");
+$.notify("Do not press this button", "info");
+$.notify("Warning: Self-destruct in 3.. 2..", "warn");
+$.notify("BOOM!", "error");
+</script> --}}
 </x-app-layout>
