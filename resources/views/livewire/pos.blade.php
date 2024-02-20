@@ -49,7 +49,9 @@
                                         </div>
                                     </div>
                                     <div class="header-buttons flex px-2 flex-shrink-0">
-                                        <div class="ns-button error"><button
+                                        <div class="ns-button error">
+
+<button
                                                 class="rounded shadow flex-shrink-0 bg-red-500 gap-1 text-white h-12 flex items-center px-2 py-1 text-sm"><svg
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -63,7 +65,7 @@
                                         </div>
                                     </div>
                                     <div class="header-buttons flex px-2 flex-shrink-0">
-                                        <div class="ns-button default"><button
+                                        <div class="ns-button default"><button onclick="cash.showModal()"
                                                 class="rounded shadow bg-white flex-shrink-0 h-12 gap-1 flex items-center px-2 py-1 text-sm"><svg
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -250,26 +252,36 @@
                                                                 class="lucide lucide-search">
                                                                 <circle cx="11" cy="11" r="8" />
                                                                 <path d="m21 21-4.3-4.3" />
-                                                            </svg></button><input type="text" placeholder="Search Your Product Here ..."
-                                                            class="flex-auto outline-none px-2">
+                                                            </svg></button><form wire:submit.prevent='fsearch' class="w-full">
+                                                                <input type="text" wire:model.live="search" placeholder="Search Your Product Here ..."
+                                                            class="flex-auto outline-none px-2 w-full">
+                                                            <input type="submit" class="hidden ">
+                                                                </form>
                                                     </div>
                                                 </div>
                                                 <div style="height:0"></div>
                                                
-                                                <div id="grid-items" class="overflow-y-auto h-full flex-col flex">
+                                                <div id="grid-items" class="p-3 overflow-y-auto h-full flex-col flex">
                                                     <div
-                                                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                                                        class="grid gap-1 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                                                        {{--  --}}
+                                                        @forelse ($products as $item)
                                                         <div
-                                                            class="cell-item w-full h-36 cursor-pointer border flex flex-col items-center justify-center overflow-hidden relative">
-                                                           
-                                                            <div class="w-full absolute z-10 -bottom-10">
-                                                                <div
-                                                                    class="cell-item-label relative w-full flex items-center justify-center -top-10 h-20 py-2">
-                                                                    <h3 class="text-sm font-bold py-2 text-center">
-                                                                        Bedding &amp; Bath</h3>
-                                                                </div>
+                                                        class=" w-full h-36 cursor-pointer border flex flex-col items-center justify-center overflow-hidden relative">
+                                                            
+                                                                <h3 class="text-sm text-center font-bold py-2 ">
+                                                                      {{ $item->name }} </h3>
+                                                                      <h3>{{ $item->sale_price }} Rs</h3>
+                                                            
+                                                        
+                                                    </div>
+                                                        @empty
+                                                            <div class="col-span-5">
+                                                                <h3 class="text-center text-bold">Nothing Here Yet!</h3>
                                                             </div>
-                                                        </div>
+                                                        @endforelse
+                                                       
+                                                        {{--  --}}
                                                        
                                                         
                                                         
@@ -302,5 +314,34 @@
     });
 </script>
 @endscript
-
+<script>
+    function cal(params) {
+        $('#qty').on('input', function() {
+            // Get the value of the input with id="qty"
+            var qtyValue = parseFloat($(this).val());
+            
+            // Get the inner text of the element with id="sp"
+            var price = parseFloat($('#sp').text());
+            
+            // Calculate the total
+            var total = qtyValue * price;
+            
+            // Display the total in the element with id="tp"
+            $('#tp').text(total);
+        });
+    }
+</script>
+<!-- Open the modal using ID.showModal() method -->
+<dialog id="cash" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">Name: SOme</h3>
+    <p  class="py-4">Price : <span id="sp">200</span> Rs.</p>
+   <p>Quantity: <input id="qty" type="number" onchange="cal()" ></p>
+   <h3 class="font-bold text-base">Total : <span id="tp"></span> </h3>
+   
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
 </div>

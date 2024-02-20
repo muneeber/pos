@@ -14,6 +14,7 @@ class Pos extends Component
     public $name;
     public $price;
     public $totalPrice;
+    public $products=[];
     function fbarcode() {
         $this->validate();
         $product = Product::where('barcode', $this->barcode)->get();
@@ -33,6 +34,14 @@ class Pos extends Component
     function hi() {
         dd('hi');
     }
+
+    public $search = '';
+ 
+    public function fsearch(){
+        $this->products = Product::where('name', 'like', '%' . $this->search . '%')->get();
+       
+    }
+
     public function render()
     {
         return view('livewire.pos')->layout('layouts.posLayout');
