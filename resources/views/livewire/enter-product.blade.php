@@ -5,6 +5,9 @@
       <div class=" flex justify-center ">
         <form wire:submit.prevent="save" class="w-full max-w-md shadow-md bg-white rounded p-4 my-6">
           @csrf
+          <div wire:loading class="">
+          <span class="loading loading-spinner loading-md"></span>
+        </div>
           <h1 class="text-center text-xl  font-extrabold my-4">New Product Entry</h1>
           <div class="mb-4 flex flex-wrap justify-between">
             <div class="mb-4 w-full  md:w-1/2">

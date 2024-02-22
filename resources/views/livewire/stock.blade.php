@@ -93,7 +93,7 @@
                         <td>{{ $item->retail_price }}</td>
                         <td>{{ $item->sale_price }}</td>
                         <td class="flex flex-col  ">
-                            <a wire:navigate href='#' class="btn btn-sm btn-primary rounded text-white">Edit</a>
+                            <a wire:navigate href='{{ route('product.edit', $item->id) }}' class="btn btn-sm btn-primary rounded text-white">Edit</a>
 
                             <button wire:confirm="Are You Sure To Delete {{ $item->name }}" wire:click="delete({{ $item->id}})" class="btn btn-sm bg-red-500 hover:bg-red-700 rounded text-white">Delete</button>
                         </td>
@@ -104,6 +104,9 @@
             </tbody>
         </table>
     </div>
+  
+        
+   
     <script src="{{ asset('js/jquery.js') }}"></script>
     <script src="{{ asset('js/notify.js') }}"></script>
     @script
@@ -114,4 +117,10 @@
        
     </script>
 @endscript
+@if (Session::has('editSuccess')) {
+   <script>
+      $.notify("Product Edited Successfully", "success");
+    </script>     
+@endif    
+}
 </div>

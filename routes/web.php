@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Livewire\Dashboard;
 use App\Livewire\EnterProduct;
 use App\Livewire\Pos;
+use App\Livewire\ProductEdit;
 use App\Livewire\Stock;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,7 @@ Route::get('/dashboard', Dashboard::class)->middleware(['auth', 'verified'])->na
 
 Route::middleware('auth')->group(function () {
 Route::get('/product/create',EnterProduct::class)->name("product.create");
+Route::get('/product/edit/{id}',ProductEdit::class)->name("product.edit");
 Route::get('/pos',Pos::class)->name("pos.index");
 Route::get('/stock',Stock::class)->name("stock.index");
 
