@@ -121,6 +121,6 @@
    <script>
       $.notify("Product Edited Successfully", "success");
     </script>     
-@endif    
 }
+@endif    
 </div>
