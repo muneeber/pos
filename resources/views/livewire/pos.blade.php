@@ -1,17 +1,17 @@
-
 <div class="bg-[#D1D5DB] w-screen h-screen">
-    <script src="{{ asset('js/jquery.js') }}"></script>
-    <script src="{{ asset('js/notify.js') }}"></script>
+    
     <div class="h-full w-full flex flex-col">
         <div class="overflow-hidden flex flex-auto">
             <div id="dashboard-body" class="flex flex-auto flex-col overflow-hidden">
                 <div class="overflow-y-auto flex-auto">
                     <div id="pos-app" class="h-full w-full relative" data-v-app="">
                         <div class="h-full flex-auto flex flex-col" id="pos-container">
-                            <div class="flex overflow-hidden flex-shrink-0 px-2 pt-2">
+                            {{-- navbar --}}
+                            <div id='nav' class="flex overflow-hidden flex-shrink-0 px-2 pt-2">
                                 <div class="-mx-2 flex overflow-x-auto pb-1">
                                     <div class="header-buttons flex px-2 flex-shrink-0">
-                                        <div class=""><a wire:navigate href="{{ route('dashboard') }}"
+                                        <div class="">
+                                            <a wire:navigate href="{{ route('dashboard') }}"
                                                 class="rounded btn text-white btn-success shadow flex-shrink-0 h-12 flex items-center px-2 py-1 text-sm">
                                                 {{-- <i class="mr-1 text-xl las la-tachometer-alt"></i> --}}
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -51,7 +51,7 @@
                                     <div class="header-buttons flex px-2 flex-shrink-0">
                                         <div class="ns-button error">
 
-<button
+                                            <button wire:click='rest'
                                                 class="rounded shadow flex-shrink-0 bg-red-500 gap-1 text-white h-12 flex items-center px-2 py-1 text-sm"><svg
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -65,7 +65,9 @@
                                         </div>
                                     </div>
                                     <div class="header-buttons flex px-2 flex-shrink-0">
-                                        <div class="ns-button default"><button onclick="cash.showModal()"
+
+
+                                        <div class="ns-button default"><button onclick="my_modal_2.showModal()"
                                                 class="rounded shadow bg-white flex-shrink-0 h-12 gap-1 flex items-center px-2 py-1 text-sm"><svg
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -82,10 +84,12 @@
                             </div>
                             <div class="flex-auto overflow-hidden flex p-2">
                                 <div class="flex flex-auto overflow-hidden -m-2">
-                                    <div class="w-1/2 flex overflow-hidden p-2">
+                                    <div id='cart' class="w-1/2 flex overflow-hidden p-2">
                                         <div id="pos-cart" class="flex-auto bg-white flex flex-col">
                                             <div id="grid-header" class="p-2 border-b">
-                                                <div class="border rounded flex overflow-hidden"><button title="Barcode."
+                                                {{-- Barcode form --}}
+                                                <div class="border rounded flex overflow-hidden"><button
+                                                        title="Barcode."
                                                         class="outline-none flex justify-center items-center w-10 h-10 border-r">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="18"
                                                             height="18" viewBox="0 0 24 24" fill="none"
@@ -98,9 +102,15 @@
                                                             <path d="M17 5v14" />
                                                             <path d="M21 5v14" />
                                                         </svg>
-                                                    </button> <form wire:submit="fbarcode" class="flex-auto outline-none px-2"><input type="text" wire:model="barcode" id="barcode" placeholder="Enter Barcode ..." class="w-full outline-none"><input type="submit" class="hidden"></form>
+                                                    </button>
+                                                    <form wire:submit="fbarcode" class="flex-auto outline-none px-2">
+                                                        <input type="text" wire:model="barcode" id="barcode"
+                                                            placeholder="Enter Barcode ..."
+                                                            class="w-full outline-none"><input type="submit"
+                                                            class="hidden"></form>
                                                 </div>
                                             </div>
+                                            {{-- Cart Headings --}}
                                             <div class="rounded shadow ns-tab-item flex-auto flex overflow-hidden">
                                                 <div class="cart-table flex flex-auto flex-col overflow-hidden">
                                                     <div id="cart-table-header"
@@ -112,25 +122,34 @@
                                                         <div
                                                             class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
                                                             Price</div>
-                                                            <div
+                                                        <div
                                                             class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
                                                             Total</div>
                                                     </div>
-                                                    <div id="qtyCheck"
-                                                    class="w-full {{ $state }} text-black font-semibold ">
-                                                    <div id="showProduct" class="w-full text-center lg:w-4/6 p-2 border border-l-0 border-t-0">
-                                                        {{ $name }}</div>
-                                                    <div class="hidden lg:flex lg:w-1/6  border-b border-t-0">
-                                                        <input type="number" wire.change="hi" class="w-full h-full" placeholder="qty"></div>
-                                                    <div id="productPrice"
-                                                        class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
-                                                        {{ $price }}
+                                            {{-- Cart Data --}}
+                                                    @forelse ($selectedProducts as  $index => $SP)
+                                                    
+                                                        <div id="qtyCheck"
+                                                            class="w-full flex text-black font-semibold ">
+                                                            <div id="showProduct"
+                                                                class="w-full text-center lg:w-4/6 p-2 border border-l-0 border-t-0">
+                                                                {{ $SP['name'] }}</div>
+                                                            <div wire:click='changeQty({{ $index }})' 
+                                                                class="hidden lg:flex lg:w-1/6  text-center px-3 border-b border-t-0">
+                                                                {{ $SP['qty'] }}
+                                                               
+                                                            </div>
+                                                            <div id="productPrice"
+                                                                class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
+                                                                {{ $SP['price'] }}
+                                                            </div>
+                                                            <div id="productPrice"
+                                                                class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
+                                                                {{ $SP['totalPrice'] }}
+                                                            </div>
                                                         </div>
-                                                        <div id="productPrice"
-                                                        class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
-                                                        {{ $totalPrice }}
-                                                        </div>
-                                                </div>
+                                                    @empty
+                                                    @endforelse
                                                     <div id="cart-products-table"
                                                         class="flex flex-auto flex-col overflow-auto">
                                                         {{-- <div class="text-black flex">
@@ -214,7 +233,7 @@
                                                             <span
                                                                 class="text-lg hidden md:inline lg:text-2xl">Discount</span>
                                                         </div>
-                                                        <div id="void-button"
+                                                        <div id="void-button" wire:click="rest"
                                                             class="flex-shrink-0 w-1/4 flex items-center gap-2 font-bold cursor-pointer justify-center bg-red-500 text-white border-box-edge hover:bg-red-600 flex-auto">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                 height="24" viewBox="0 0 24 24" fill="none"
@@ -237,7 +256,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="w-1/2 p-2 flex overflow-hidden">
+                                    <div id="search" class="w-1/2 p-2 flex overflow-hidden">
                                         <div id="pos-grid" class="flex-auto bg-white flex flex-col">
                                             <div id="grid-container"
                                                 class="rounded shadow overflow-hidden flex-auto flex flex-col">
@@ -252,39 +271,44 @@
                                                                 class="lucide lucide-search">
                                                                 <circle cx="11" cy="11" r="8" />
                                                                 <path d="m21 21-4.3-4.3" />
-                                                            </svg></button><form wire:submit.prevent='fsearch' class="w-full">
-                                                                <input type="text" wire:model.live="search" placeholder="Search Your Product Here ..."
-                                                            class="flex-auto outline-none px-2 w-full">
+                                                            </svg></button>
+                                                        <form wire:submit.prevent='fsearch' class="w-full">
+                                                            <input id="search" type="text"
+                                                                wire:model.live="search"
+                                                                placeholder="Search Your Product Here ..."
+                                                                class="flex-auto outline-none px-2 w-full">
                                                             <input type="submit" class="hidden ">
-                                                                </form>
+                                                        </form>
                                                     </div>
                                                 </div>
                                                 <div style="height:0"></div>
-                                               
+
                                                 <div id="grid-items" class="p-3 overflow-y-auto h-full flex-col flex">
                                                     <div
                                                         class="grid gap-1 grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                                                         {{--  --}}
                                                         @forelse ($products as $item)
-                                                        <div
-                                                        class=" w-full h-36 cursor-pointer border flex flex-col items-center justify-center overflow-hidden relative">
-                                                            
+                                                            <div wire:key="{{ $item->id }}"
+                                                                wire:click="addProduct({{ $item->id }})"
+                                                                class=" w-full h-36 cursor-pointer border flex flex-col items-center justify-center overflow-hidden relative">
+
                                                                 <h3 class="text-sm text-center font-bold py-2 ">
-                                                                      {{ $item->name }} </h3>
-                                                                      <h3>{{ $item->sale_price }} Rs</h3>
-                                                            
-                                                        
-                                                    </div>
+                                                                    {{ $item->name }} </h3>
+                                                                <h3>{{ $item->sale_price }} Rs</h3>
+
+
+                                                            </div>
                                                         @empty
                                                             <div class="col-span-5">
-                                                                <h3 class="text-center text-bold">Nothing Here Yet!</h3>
+                                                                <h3 class="text-center text-bold">Nothing Here Yet!
+                                                                </h3>
                                                             </div>
                                                         @endforelse
-                                                       
+
                                                         {{--  --}}
-                                                       
-                                                        
-                                                        
+
+
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -298,50 +322,91 @@
             </div>
         </div>
     </div>
+    <script src="{{ asset('js/jquery.js') }}"></script>
+    <script src="{{ asset('js/notify.js') }}"></script>
 
     @script
-<script>
-    $wire.on('barError', () => {
-        $.notify("Wrong  Bar Code Number", "error");
-    });
-    $wire.on('resetBar', () => {
-        $('#barcode').val('');
-        // console.log('done');
-    });
-    $wire.on('qtyCheck', () => {
-        $('#qtyCheck').removeClass('hidden');
-        console.log('done');
-    });
-</script>
-@endscript
-<script>
-    function cal(params) {
-        $('#qty').on('input', function() {
-            // Get the value of the input with id="qty"
-            var qtyValue = parseFloat($(this).val());
-            
-            // Get the inner text of the element with id="sp"
-            var price = parseFloat($('#sp').text());
-            
-            // Calculate the total
-            var total = qtyValue * price;
-            
-            // Display the total in the element with id="tp"
-            $('#tp').text(total);
-        });
-    }
-</script>
-<!-- Open the modal using ID.showModal() method -->
-<dialog id="cash" class="modal">
-  <div class="modal-box">
-    <h3 class="font-bold text-lg">Name: SOme</h3>
-    <p  class="py-4">Price : <span id="sp">200</span> Rs.</p>
-   <p>Quantity: <input id="qty" type="number" onchange="cal()" ></p>
-   <h3 class="font-bold text-base">Total : <span id="tp"></span> </h3>
-   
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
+        <script>
+            $wire.on('barError', () => {
+                $.notify("Wrong  Bar Code Number", "error");
+            });
+            $wire.on('resetBar', () => {
+                $('#barcode').val('');
+                // console.log('done');
+            });
+            $wire.on('resetSearch', () => {
+                $('#search').val('');
+                // console.log('done');
+            });
+            $wire.on('changeQty', () => {
+                console.log('modal1');
+                my_modal_2.showModal();
+                console.log('modal2');
+            });
+        </script>
+    @endscript
+
+    <!-- Open the modal using ID.showModal() method -->
+    <dialog id="my_modal_2" class="modal">
+        <div class="modal-box">
+            <div id="screen" class="h-24 primary ns-box-body flex items-center justify-center">
+                <h1 class="font-bold text-3xl">1</h1>
+            </div>
+            <div id="numpad"
+                class="grid grid-flow-row divide-x divide-y border-r border-b border-input-edge grid-cols-3 grid-rows-3">
+                <div
+                    class="border-l border-t select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>7</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>8</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>9</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>4</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>5</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>6</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>1</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>2</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>3</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <!----><i class="las la-backspace"></i>
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>0</span><!---->
+                </div>
+                <div
+                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
+                    <span>Enter</span><!---->
+                </div>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
 </div>

@@ -10,30 +10,38 @@ class Pos extends Component
 {
     #[Validate('required')]
     public $barcode;
-    public $state='hidden';
     public $name;
     public $price;
     public $totalPrice;
     public $products=[];
+    public $selectedProducts=[];
+
     function fbarcode() {
         $this->validate();
         $product = Product::where('barcode', $this->barcode)->get();
-        if (count($product)>0) {
-            
-            $this->state="flex"; 
-            $this->name=($product[0]->name);
-            $this->price=($product[0]->sale_price);
+        if (count($product) > 0) {
+            // Loop through each product and store its information
+            foreach ($product as $prod) {
+                $selectedProduct = [
+                    'id' => $prod->id,
+                    'name' => $prod->name,
+                    'price' => $prod->sale_price,
+                    'qty' => 1,
+                    'totalPrice' => $prod->sale_price
+                ];
+                // dd($selectedProduct['id']);
+                $this->selectedProducts[] = $selectedProduct; // Append the product info to selectedProducts array
+                // dd($this->selectedProducts);
+
+            }
+    
+            $this->dispatch('resetBar'); 
+        } else {
+            $this->dispatch('barError'); 
             $this->dispatch('resetBar'); 
         }
-        else{
-            
-        $this->dispatch('barError'); 
-        $this->dispatch('resetBar'); 
-        }
     }
-    function hi() {
-        dd('hi');
-    }
+    
 
     public $search = '';
  
@@ -41,6 +49,37 @@ class Pos extends Component
         $this->products = Product::where('name', 'like', '%' . $this->search . '%')->get();
        
     }
+  
+
+    function rest()  {
+        $this->selectedProducts=[];
+        $this->dispatch('resetBar'); 
+        $this->products=[];
+        $this->dispatch('resetSearch'); 
+
+
+    }
+    function addProduct(Product $id){
+        // dd($id);
+        $selectedProduct = [
+            'id' => $id->id,
+            'name' => $id->name,
+            'price' => $id->sale_price,
+            'qty' => 1,
+            'totalPrice' => $id->sale_price
+        ];
+        // dd($selectedProduct);
+        $this->products=[];
+        $this->dispatch('resetSearch'); 
+
+        $this->selectedProducts[] = $selectedProduct; // Append the product info to selectedProducts array
+
+    }
+
+    function changeQty($index) {
+        $this->dispatch("changeQty");
+    }
+
 
     public function render()
     {
