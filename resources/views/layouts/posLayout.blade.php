@@ -10,9 +10,12 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <!-- Scripts -->
+<!-- Add this to your layout file or the appropriate Blade view -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 
 <body>

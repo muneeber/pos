@@ -3,8 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\Product;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Validate;
+use Barryvdh\Debugbar\Facades\Debugbar;
+use Illuminate\Cache\RateLimiting\Limit;
 
 class Pos extends Component
 {
@@ -16,6 +19,8 @@ class Pos extends Component
     public $products=[];
     public $selectedProducts=[];
     public $billSubtotal=0;
+    public $discount=0;
+    public $billTotal=0;
 
 
     function fbarcode() {
@@ -59,6 +64,10 @@ class Pos extends Component
         $this->dispatch('resetBar'); 
         $this->products=[];
         $this->dispatch('resetSearch'); 
+        $this->reset('discount','billSubtotal','billTotal');
+        // $this->discount=0;
+        // $this->billSubtotal
+        // $this->billTotal
 
 
     }
@@ -84,6 +93,23 @@ class Pos extends Component
         $this->dispatch("changeQty");
     }
 
+    #[On('discount')] 
+    public function discount($value)
+    {
+        $discount=$value;
+        $limit=($this->billSubtotal*20)/100;
+        if ($discount<=$limit) {
+            # code...
+            $this->discount= $value;
+            $this->billTotal=$this->billSubtotal-$value;
+        }
+        else{
+            // $this->discount= $limit;
+            $this->dispatch('overDiscount', ['limit'=> $limit, 'discount'=>$discount ]); 
+        }
+        // Debugbar::info('discount');
+        // Debugbar::addMessage($value, 'success');
+    }
 
     public function render()
     {

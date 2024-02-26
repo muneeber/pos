@@ -80,6 +80,7 @@
                                                 </svg> <span>Cash
                                                     Register</span></button></div>
                                     </div>
+
                                     <div wire:loading class="">
                                         <span class="loading loading-spinner loading-lg"></span>
 
@@ -138,9 +139,24 @@
                                                             <div id="showProduct"
                                                                 class="w-full text-center lg:w-4/6 p-2 border border-l-0 border-t-0">
                                                                 {{ $SP['name'] }}</div>
-                                                            <div wire:click='changeQty({{ $index }})'
+                                                                <script>
+                                                                    async function changeQty(name) {
+                                                                        const { value: number } = await Swal.fire({
+                                                                            input: "number",
+                                                                            inputLabel: "Discount",
+                                                                            inputPlaceholder: "Enter Your Discount in Rs.",
+                                                                            inputAttributes: {
+                                                                                "aria-label": "Type your message here"
+                                                                            },
+                                                                            showCancelButton: true
+                                                                        });
+                                                                        // Add your logic for the changeQty function here
+                                                                    }
+                                                                </script>
+                                                                
+                                                            <div onclick="changeQty('{{ $SP['name'] }}')"
                                                                 class="hidden lg:flex lg:w-1/6  text-center px-3 border-b border-t-0">
-                                                                {{ $SP['qty'] }}
+                                                                {{ $SP['qty'] }}    
 
                                                             </div>
                                                             <div id="productPrice"
@@ -181,15 +197,16 @@
                                                                     <span>Discount</span>
                                                                 </td>
                                                                 <td width="200" class="border p-2 text-right">
-                                                                    <a
-                                                                        class="cursor-pointer outline-none border-dashed py-1 border-b border-info-black text-sm">Rs.0</a>
+                                                                    <p
+                                                                        class="cursor-pointer outline-none border-dashed py-1 border-b border-info-black text-sm">
+                                                                        Rs.{{ $discount }}</p>
                                                                 </td>
                                                             </tr>
                                                             <tr class="bg-[#4ADE80]">
                                                                 <td width="200" class="border p-2"></td>
                                                                 <td width="200" class="border p-2">Total</td>
                                                                 <td width="200" class="border p-2 text-right">
-                                                                    Rs.0</td>
+                                                                    Rs.{{ $billTotal }}</td>
                                                             </tr>
                                                         </table>
                                                     </div>
@@ -277,8 +294,7 @@
                                                                 <path d="m21 21-4.3-4.3" />
                                                             </svg></button>
                                                         <form wire:submit.prevent='fsearch' class="w-full">
-                                                            <input id="search" type="text"
-                                                                wire:model="search"
+                                                            <input id="search" type="text" wire:model="search"
                                                                 placeholder="Search Your Product Here ..."
                                                                 class="flex-auto outline-none px-2 w-full">
                                                             <input type="submit" class="hidden ">
@@ -328,11 +344,56 @@
     </div>
     <script src="{{ asset('js/jquery.js') }}"></script>
     <script src="{{ asset('js/notify.js') }}"></script>
-
     @script
         <script>
+            // Wait for the DOM to be ready
+            $(document).ready(function() {
+                // Add click event handler to the button
+                $('#discount-button').click(async function() {
+                    // Trigger SweetAler
+                    const {
+                        value: number
+                    } = await Swal.fire({
+                        input: "number",
+                        inputLabel: "Discount",
+                        inputPlaceholder: "Enter Your Discount in Rs.",
+                        inputAttributes: {
+                            "aria-label": "Type your message here"
+                        },
+                        showCancelButton: true
+                    });
+                    if (text) {
+                        Swal.fire(`The Discount of ${text} Has Been Applied`);
+                        // $wire.dispatch('discount', value : text);
+                        $wire.dispatch('discount', {value: text});
+
+                    }
+                });
+            });
+
+        //    async function changeQty($name) {
+        //         const {value: number} = await Swal.fire({
+        //                 input: "number",
+        //                 inputLabel: "Discount",
+        //                 inputPlaceholder: "Enter Your Discount in Rs.",
+        //                 inputAttributes: {
+        //                     "aria-label": "Type your message here"
+        //                 },
+        //                 showCancelButton: true
+        //             });
+        //     }
+
             $wire.on('barError', () => {
                 $.notify("Wrong  Bar Code Number", "error");
+            });
+            $wire.on('overDiscount', (data) => {
+                const limit = data[0].limit;
+                const discount = data[0].discount;
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops... Over Discount",
+                    text: `You have applied the discount of ${discount} but Only ${limit} can be applied`,
+                });
             });
             $wire.on('resetBar', () => {
                 $('#barcode').val('');
@@ -341,11 +402,6 @@
             $wire.on('resetSearch', () => {
                 $('#search').val('');
                 console.log('done');
-            });
-            $wire.on('changeQty', () => {
-                console.log('modal1');
-                my_modal_2.showModal();
-                console.log('modal2');
             });
         </script>
     @endscript
