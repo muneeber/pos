@@ -1,5 +1,5 @@
 <div class="bg-[#D1D5DB] w-screen h-screen">
-    
+
     <div class="h-full w-full flex flex-col">
         <div class="overflow-hidden flex flex-auto">
             <div id="dashboard-body" class="flex flex-auto flex-col overflow-hidden">
@@ -80,6 +80,10 @@
                                                 </svg> <span>Cash
                                                     Register</span></button></div>
                                     </div>
+                                    <div wire:loading class="">
+                                        <span class="loading loading-spinner loading-lg"></span>
+
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex-auto overflow-hidden flex p-2">
@@ -107,7 +111,8 @@
                                                         <input type="text" wire:model="barcode" id="barcode"
                                                             placeholder="Enter Barcode ..."
                                                             class="w-full outline-none"><input type="submit"
-                                                            class="hidden"></form>
+                                                            class="hidden">
+                                                    </form>
                                                 </div>
                                             </div>
                                             {{-- Cart Headings --}}
@@ -126,18 +131,17 @@
                                                             class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
                                                             Total</div>
                                                     </div>
-                                            {{-- Cart Data --}}
+                                                    {{-- Cart Data --}}
                                                     @forelse ($selectedProducts as  $index => $SP)
-                                                    
                                                         <div id="qtyCheck"
                                                             class="w-full flex text-black font-semibold ">
                                                             <div id="showProduct"
                                                                 class="w-full text-center lg:w-4/6 p-2 border border-l-0 border-t-0">
                                                                 {{ $SP['name'] }}</div>
-                                                            <div wire:click='changeQty({{ $index }})' 
+                                                            <div wire:click='changeQty({{ $index }})'
                                                                 class="hidden lg:flex lg:w-1/6  text-center px-3 border-b border-t-0">
                                                                 {{ $SP['qty'] }}
-                                                               
+
                                                             </div>
                                                             <div id="productPrice"
                                                                 class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
@@ -167,7 +171,7 @@
                                                                 <td width="200" class="border p-2">Sub Total
                                                                 </td>
                                                                 <td width="200" class="border p-2 text-right">
-                                                                    Rs.0</td>
+                                                                    Rs.{{ $billSubtotal }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td width="200" class="border p-2"><a
@@ -256,7 +260,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="search" class="w-1/2 p-2 flex overflow-hidden">
+                                    <div description="search" class="w-1/2 p-2 flex overflow-hidden">
                                         <div id="pos-grid" class="flex-auto bg-white flex flex-col">
                                             <div id="grid-container"
                                                 class="rounded shadow overflow-hidden flex-auto flex flex-col">
@@ -274,7 +278,7 @@
                                                             </svg></button>
                                                         <form wire:submit.prevent='fsearch' class="w-full">
                                                             <input id="search" type="text"
-                                                                wire:model.live="search"
+                                                                wire:model="search"
                                                                 placeholder="Search Your Product Here ..."
                                                                 class="flex-auto outline-none px-2 w-full">
                                                             <input type="submit" class="hidden ">
@@ -336,7 +340,7 @@
             });
             $wire.on('resetSearch', () => {
                 $('#search').val('');
-                // console.log('done');
+                console.log('done');
             });
             $wire.on('changeQty', () => {
                 console.log('modal1');

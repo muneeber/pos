@@ -15,6 +15,8 @@ class Pos extends Component
     public $totalPrice;
     public $products=[];
     public $selectedProducts=[];
+    public $billSubtotal=0;
+
 
     function fbarcode() {
         $this->validate();
@@ -22,6 +24,7 @@ class Pos extends Component
         if (count($product) > 0) {
             // Loop through each product and store its information
             foreach ($product as $prod) {
+                $this->billSubtotal+= $prod->sale_price;
                 $selectedProduct = [
                     'id' => $prod->id,
                     'name' => $prod->name,
@@ -68,6 +71,7 @@ class Pos extends Component
             'qty' => 1,
             'totalPrice' => $id->sale_price
         ];
+        $this->billSubtotal+=$id->sale_price;
         // dd($selectedProduct);
         $this->products=[];
         $this->dispatch('resetSearch'); 
