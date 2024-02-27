@@ -34,17 +34,18 @@
               <div class="text-white text-sm mt-1 mx-1 text-center bg-red-500 p-1">{{ $message }}</div>
           @enderror
             </div>
-            <div class="mb-4 w-full md:mb-0 md:w-1/3">
-              <label class="mb-2 block text-sm font-bold text-gray-700" for="sale_price"> Sale Price </label>
-              <input  wire:model="salePrice" class="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none" id="sale_price" name="sale_price" type="number" placeholder="Sale Price" />
-              @error('salePrice')
-              <div class="text-white text-sm mt-1 mx-1 text-center bg-red-500 p-1">{{ $message }}</div>
-          @enderror
-            </div>
+           
             <div class="mb-4 w-full md:mb-0 md:w-1/3">
               <label class="mb-2 block text-sm font-bold text-gray-700" for="retail_price"> Retail Price </label>
               <input  wire:model="retailPrice" class="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none" id="retail_price" name="retail_price" type="number" placeholder="Retail Price" />
               @error('retailPrice')
+              <div class="text-white text-sm mt-1 mx-1 text-center bg-red-500 p-1">{{ $message }}</div>
+          @enderror
+            </div>
+            <div class="mb-4 w-full md:mb-0 md:w-1/3">
+              <label class="mb-2 block text-sm font-bold text-gray-700" for="sale_price"> Sale Price </label>
+              <input  wire:model="salePrice" class="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none" id="sale_price" name="sale_price" type="number" placeholder="Sale Price" />
+              @error('salePrice')
               <div class="text-white text-sm mt-1 mx-1 text-center bg-red-500 p-1">{{ $message }}</div>
           @enderror
             </div>
@@ -55,11 +56,8 @@
           </div>
         </form>
       </div>
-      @php
-          if (Session::has("success")) {
-           echo"<script>$.notify('Product Entered Successfully', 'success');</script>";
-          }
-      @endphp
+   
+    
       {{-- <script>
       $.notify("Hello World");
       $.notify("Access granted", "success");
@@ -72,6 +70,9 @@
     $wire.on('productCreated', () => {
       $.notify("Product Created Successfully", "success");
             $('form :input').val('');
+    });
+    $wire.on('priceError', () => {
+      $.notify("The Sale Price should be greater or equal to the Retail Price", "error");
     });
 </script>
 @endscript
