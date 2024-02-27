@@ -2,12 +2,17 @@
 
 namespace App\Livewire;
 
+use App\Models\Sale;
 use App\Models\Product;
 use Livewire\Component;
+use App\Models\SaleItem;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Auth;
 use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Cache\RateLimiting\Limit;
+use RealRashid\SweetAlert\Facades\Alert;
+use Barryvdh\Debugbar\Twig\Extension\Debug;
 
 class Pos extends Component
 {
@@ -40,7 +45,7 @@ class Pos extends Component
                 // dd($selectedProduct['id']);
                 $this->selectedProducts[] = $selectedProduct; // Append the product info to selectedProducts array
                 // dd($this->selectedProducts);
-
+                $this->calculateBill();
             }
     
             $this->dispatch('resetBar'); 
@@ -50,6 +55,18 @@ class Pos extends Component
         }
     }
     
+    public function updateQuantity($index, $qty){
+        $this->selectedProducts[$index]['qty'] = $qty;
+        $this->selectedProducts[$index]['totalPrice'] = $this->selectedProducts[$index]['price'] * $qty;
+
+        $this->calculateBill();
+    }
+
+    public function calculateBill(){
+        $this->billSubtotal = collect($this->selectedProducts)->sum('totalPrice');
+        $this->billTotal = $this->billSubtotal - $this->discount;
+    }
+
 
     public $search = '';
  
@@ -57,7 +74,7 @@ class Pos extends Component
         $this->products = Product::where('name', 'like', '%' . $this->search . '%')->get();
        
     }
-  
+
 
     function rest()  {
         $this->selectedProducts=[];
@@ -82,17 +99,13 @@ class Pos extends Component
         ];
         $this->billSubtotal+=$id->sale_price;
         // dd($selectedProduct);
+        $this->calculateBill();
         $this->products=[];
         $this->dispatch('resetSearch'); 
 
         $this->selectedProducts[] = $selectedProduct; // Append the product info to selectedProducts array
 
     }
-
-    function changeQty($index) {
-        $this->dispatch("changeQty");
-    }
-
     #[On('discount')] 
     public function discount($value)
     {
@@ -111,6 +124,51 @@ class Pos extends Component
         // Debugbar::addMessage($value, 'success');
     }
 
+    function pay() {
+        $pay=([
+            'user_id'=> Auth::id(),
+            'sale_date' => today() ,
+            'subtotal' =>$this->billSubtotal,
+            'discount' => $this->discount,
+            'total_amount'=> $this->billTotal
+        ]);
+        $sale =Sale::create($pay);
+        foreach ($this->selectedProducts as $product) {
+            SaleItem::create([
+                'sale_id' => $sale->id,
+                'product_id' => $product['id'],
+                'quantity' => $product['qty'],
+                'unit_price' => $product['price']
+            ]);
+             // Update product quantity
+        $productToUpdate = Product::findOrFail($product['id']);
+        $productToUpdate->decrement('stock_quantity', $product['qty']);
+        }
+        $this->dispatch('extras');
+        $this->rest();
+    }
+    function hold() {
+        
+        $pay=([
+            'user_id'=> Auth::id(),
+            'sale_date' => today() ,
+            'status'=>'pending',
+            'subtotal' =>$this->billSubtotal,
+            'discount' => $this->discount,
+            'total_amount'=> $this->billTotal
+        ]);
+        $sale=Sale::create($pay);
+        foreach ($this->selectedProducts as $product) {
+            SaleItem::create([
+                'sale_id' => $sale->id,
+                'product_id' => $product['id'],
+                'quantity' => $product['qty'],
+                'unit_price' => $product['price']
+            ]);
+        }
+        $this->dispatch('hold');
+        $this->rest();
+    }
     public function render()
     {
         return view('livewire.pos')->layout('layouts.posLayout');

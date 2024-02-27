@@ -67,7 +67,7 @@
                                     <div class="header-buttons flex px-2 flex-shrink-0">
 
 
-                                        <div class="ns-button default"><button onclick="my_modal_2.showModal()"
+                                        <div class="ns-button default"><button wire:click='check'
                                                 class="rounded shadow bg-white flex-shrink-0 h-12 gap-1 flex items-center px-2 py-1 text-sm"><svg
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -108,11 +108,11 @@
                                                             <path d="M21 5v14" />
                                                         </svg>
                                                     </button>
-                                                    <form wire:submit="fbarcode" class="flex-auto outline-none px-2">
-                                                        <input type="text" wire:model="barcode" id="barcode"
+                                                    <form wire:submit="fbarcode" class="flex flex-auto items-center outline-none px-2">
+                                                        <input type="text" wire:model="barcode" class="mr-2 w-full" id="barcode"
                                                             placeholder="Enter Barcode ..."
                                                             class="w-full outline-none"><input type="submit"
-                                                            class="hidden">
+                                                            class="btn  btn-sm btn-success rounded" value="Enter">
                                                     </form>
                                                 </div>
                                             </div>
@@ -133,31 +133,20 @@
                                                             Total</div>
                                                     </div>
                                                     {{-- Cart Data --}}
-                                                    @forelse ($selectedProducts as  $index => $SP)
-                                                        <div id="qtyCheck"
-                                                            class="w-full flex text-black font-semibold ">
+                                                    @forelse ($selectedProducts as $index => $SP)
+                                                        <div
+                                                            class="w-full flex text-black font-semibold">
                                                             <div id="showProduct"
                                                                 class="w-full text-center lg:w-4/6 p-2 border border-l-0 border-t-0">
-                                                                {{ $SP['name'] }}</div>
-                                                                <script>
-                                                                    async function changeQty(name) {
-                                                                        const { value: number } = await Swal.fire({
-                                                                            input: "number",
-                                                                            inputLabel: "Discount",
-                                                                            inputPlaceholder: "Enter Your Discount in Rs.",
-                                                                            inputAttributes: {
-                                                                                "aria-label": "Type your message here"
-                                                                            },
-                                                                            showCancelButton: true
-                                                                        });
-                                                                        // Add your logic for the changeQty function here
-                                                                    }
-                                                                </script>
-                                                                
-                                                            <div onclick="changeQty('{{ $SP['name'] }}')"
-                                                                class="hidden lg:flex lg:w-1/6  text-center px-3 border-b border-t-0">
-                                                                {{ $SP['qty'] }}    
-
+                                                                {{ $SP['name'] }}
+                                                            </div>
+                                                            <!-- Input field for quantity -->
+                                                            <div
+                                                                class="lg:flex lg:w-1/6 text-center px-3 border-b border-t-0">
+                                                                <input type="number"
+                                                                    wire:model.change="selectedProducts.{{ $index }}.qty"
+                                                                    wire:change="updateQuantity({{ $index }}, $event.target.value)"
+                                                                    class="w-full outline-none" min="1">
                                                             </div>
                                                             <div id="productPrice"
                                                                 class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
@@ -170,13 +159,9 @@
                                                         </div>
                                                     @empty
                                                     @endforelse
+
                                                     <div id="cart-products-table"
                                                         class="flex flex-auto flex-col overflow-auto">
-                                                        {{-- <div class="text-black flex">
-                                                            <div class="w-full text-center py-4 border-b">
-                                                                <h3>No products added...</h3>
-                                                            </div>
-                                                        </div> --}}
                                                     </div>
                                                     <div id="cart-products-summary" class="flex">
                                                         <table class="table ns-table w-full text-sm">
@@ -206,13 +191,13 @@
                                                                 <td width="200" class="border p-2"></td>
                                                                 <td width="200" class="border p-2">Total</td>
                                                                 <td width="200" class="border p-2 text-right">
-                                                                    Rs.{{ $billTotal }}</td>
+                                                                    Rs.<span id="billTotal">{{ $billTotal }}</span></td>
                                                             </tr>
                                                         </table>
                                                     </div>
                                                     <div class="h-16 flex flex-shrink-0 border-t border-box-edge"
                                                         id="cart-bottom-buttons">
-                                                        <div id="pay-button"
+                                                        <button id="pay-button" wire:click='pay'
                                                             class="flex-shrink-0 w-1/4 flex gap-2 items-center font-bold cursor-pointer justify-center bg-green-500 text-white hover:bg-green-600 border-r border-green-600 flex-auto"
                                                             settings="[object Object]"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" width="24"
@@ -225,8 +210,8 @@
                                                                 <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
                                                             </svg><span
                                                                 class="text-lg hidden md:inline lg:text-2xl">Pay</span>
-                                                        </div>
-                                                        <div id="hold-button"
+                                                        </button>
+                                                        <div id="hold-button" wire:click='hold'
                                                             class="flex-shrink-0 w-1/4 flex items-center gap-2 font-bold cursor-pointer justify-center bg-blue-500 text-white border-r hover:bg-blue-600 border-blue-600 flex-auto"
                                                             settings="[object Object]"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" width="24"
@@ -310,7 +295,7 @@
                                                         @forelse ($products as $item)
                                                             <div wire:key="{{ $item->id }}"
                                                                 wire:click="addProduct({{ $item->id }})"
-                                                                class=" w-full h-36 cursor-pointer border flex flex-col items-center justify-center overflow-hidden relative">
+                                                                class=" btn w-full h-36 cursor-pointer border flex flex-col items-center justify-center overflow-hidden relative">
 
                                                                 <h3 class="text-sm text-center font-bold py-2 ">
                                                                     {{ $item->name }} </h3>
@@ -362,27 +347,40 @@
                         },
                         showCancelButton: true
                     });
-                    if (text) {
-                        Swal.fire(`The Discount of ${text} Has Been Applied`);
-                        // $wire.dispatch('discount', value : text);
-                        $wire.dispatch('discount', {value: text});
-
-                    }
+                    if (number) {$wire.dispatch('discount', {value:number}); }
                 });
+
             });
 
-        //    async function changeQty($name) {
-        //         const {value: number} = await Swal.fire({
-        //                 input: "number",
-        //                 inputLabel: "Discount",
-        //                 inputPlaceholder: "Enter Your Discount in Rs.",
-        //                 inputAttributes: {
-        //                     "aria-label": "Type your message here"
-        //                 },
-        //                 showCancelButton: true
-        //             });
-        //     }
+                $wire.on('extras', async () => {
+                    var billTotalText = $('#billTotal').text();
+                    console.log(billTotalText);
+                    var billTotal = parseFloat(billTotalText);
+                    console.log(billTotal);
+                const {value: number} = await Swal.fire({
+                        input: "number",
+                        inputLabel: "Amount",
+                        inputPlaceholder: "Enter Give Amount in Rs.",
+                        inputAttributes: {
+                            "aria-label": "Type Amount here"
+                        },
+                        showCancelButton: true
+                    });
+                    if (number) {
+                        var extra =number-billTotal;
+                        console.log(extra);
+                        Swal.fire(
+                            `The Rupees you have to return is ${extra}`
+                            );
+                     }
+                });
+                $wire.on('hold', () => {
+                    console.log('hihihihihihihih');
+                    Swal.fire(`The Order Has Been set to HOLD`);
+                });
 
+               
+          
             $wire.on('barError', () => {
                 $.notify("Wrong  Bar Code Number", "error");
             });
@@ -405,68 +403,4 @@
             });
         </script>
     @endscript
-
-    <!-- Open the modal using ID.showModal() method -->
-    <dialog id="my_modal_2" class="modal">
-        <div class="modal-box">
-            <div id="screen" class="h-24 primary ns-box-body flex items-center justify-center">
-                <h1 class="font-bold text-3xl">1</h1>
-            </div>
-            <div id="numpad"
-                class="grid grid-flow-row divide-x divide-y border-r border-b border-input-edge grid-cols-3 grid-rows-3">
-                <div
-                    class="border-l border-t select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>7</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>8</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>9</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>4</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>5</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>6</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>1</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>2</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>3</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <!----><i class="las la-backspace"></i>
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>0</span><!---->
-                </div>
-                <div
-                    class="select-none   hover:bg-blue-600 hover:text-white h-24 font-bold flex items-center justify-center cursor-pointer">
-                    <span>Enter</span><!---->
-                </div>
-            </div>
-        </div>
-        <form method="dialog" class="modal-backdrop">
-            <button>close</button>
-        </form>
-    </dialog>
-
 </div>

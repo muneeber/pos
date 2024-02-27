@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class SaleItem extends Model
 {
     use HasFactory;
-    protected $fillable = ['sale_id', 'product_id', 'quantity_sold'];
+    protected $fillable = ['sale_id', 'product_id', 'quantity','unit_price'];
 
     public function sale()
     {
