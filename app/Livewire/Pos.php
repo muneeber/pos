@@ -157,7 +157,7 @@ class Pos extends Component
             'discount' => $this->discount,
             'total_amount'=> $this->billTotal
         ]);
-        $sale=Sale::create($pay);
+        $sale = Sale::create($pay);
         foreach ($this->selectedProducts as $product) {
             SaleItem::create([
                 'sale_id' => $sale->id,

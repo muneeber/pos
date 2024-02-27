@@ -27,7 +27,7 @@ class Sale extends Model
         $currentMonth = Carbon::now()->month;
         $totalProfitThisMonth = 0;
 
-        $salesThisMonth = self::whereMonth('sale_date', $currentMonth)->get();
+        $salesThisMonth = self::whereMonth('sale_date', $currentMonth)->where('status','completed')->get();
 
         foreach ($salesThisMonth as $sale) {
             $totalProfitThisMonth += $sale->calculateProfit();

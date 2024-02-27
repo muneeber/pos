@@ -1,4 +1,8 @@
 <div>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
     <div class="stats shadow w-full">
 
         <div class="stat">
@@ -45,5 +49,28 @@
             <div class="stat-desc">21% more than last month</div>
         </div>
     </div>
-    
+
+    <div class="flex">
+        <livewire:sales-chart />
+
+        <div class="stats shadow h-36 m-3 p-3">
+            <div class="stat-figure text-green-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-coins">
+                    <circle cx="8" cy="8" r="6" />
+                    <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
+                    <path d="M7 6h1v4" />
+                    <path d="m16.71 13.88.7.71-2.82 2.82" />
+                </svg>
+            </div>
+            <div class="stat">
+                <div class="stat-title">Total Profit this Month</div>
+                <div class="stat-value">{{ $ptm }}</div>
+                {{-- <div class="stat-desc">21% more than last month</div> --}}
+            </div>
+
+        </div>
+    </div>
+
 </div>

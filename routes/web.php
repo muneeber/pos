@@ -10,6 +10,7 @@ use App\Livewire\ProductEdit;
 use App\Livewire\Purchase;
 use App\Livewire\Sales;
 use App\Livewire\Stock;
+use App\Livewire\TodaySaleReport;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,6 +37,7 @@ Route::get('/pos',Pos::class)->name("pos.index");
 Route::get('/sales',Sales::class)->name("sales.index");
 Route::get('/purchase',Purchase::class)->name("purchase.index");
 Route::get('/stock',Stock::class)->name("stock.index");
+Route::get('/todayssalesreport',TodaySaleReport::class)->name("tsr.index");
 
 
     // Route::resource("/product",productController::class);

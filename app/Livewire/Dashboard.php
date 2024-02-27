@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 
 class Dashboard extends Component
 {
+    public $ptm;
     public $sales;
     public $todaySale;
     public $monthlySale;
@@ -17,6 +18,7 @@ class Dashboard extends Component
         $this->sales = $this->getNumberOfSalesToday();
         $this->todaySale = $this->getTotalSalesAmountToday();
         $this->monthlySale = $this->getTotalSalesAmountThisMonth();
+        $this->ptm=Sale::totalProfitThisMonth();
     }
   
     function getNumberOfSalesToday()
@@ -25,7 +27,7 @@ class Dashboard extends Component
         $today = Carbon::today();
 
         // Query the Sale model to count the sales that happened today
-        $numberOfSales = Sale::whereDate('sale_date', $today)->count();
+        $numberOfSales = Sale::whereDate('sale_date', $today)->where('status','completed')->count();
 
         return $numberOfSales;
     }
@@ -35,7 +37,7 @@ class Dashboard extends Component
         $today = Carbon::today();
 
         // Query the Sale model to sum up the total_amount of sales that happened today
-        $totalSalesAmount = Sale::whereDate('sale_date', $today)->sum('total_amount');
+        $totalSalesAmount = Sale::whereDate('sale_date', $today)->where('status','completed')->sum('total_amount');
 
         $formattedAmount = number_format($totalSalesAmount, 0);
 
@@ -50,7 +52,7 @@ class Dashboard extends Component
 
         // Query the Sale model to sum up the total_amount of sales for the current month
         $totalSalesAmount = Sale::whereYear('sale_date', $currentYear)
-            ->whereMonth('sale_date', $currentMonth)
+            ->whereMonth('sale_date', $currentMonth)->where('status','completed')
             ->sum('total_amount');
 
         $formattedAmount = number_format($totalSalesAmount, 0);

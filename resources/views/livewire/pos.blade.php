@@ -309,11 +309,6 @@
                                                                 </h3>
                                                             </div>
                                                         @endforelse
-
-                                                        {{--  --}}
-
-
-
                                                     </div>
                                                 </div>
                                             </div>
