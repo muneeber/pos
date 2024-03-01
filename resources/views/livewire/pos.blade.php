@@ -11,7 +11,7 @@
                                 <div class="-mx-2 flex overflow-x-auto pb-1">
                                     <div class="header-buttons flex px-2 flex-shrink-0">
                                         <div class="">
-                                            <a wire:navigate href="{{ route('dashboard') }}"
+                                            <a wire:navigate.hover href="{{ route('dashboard') }}"
                                                 class="rounded btn text-white btn-success shadow flex-shrink-0 h-12 flex items-center px-2 py-1 text-sm">
                                                 {{-- <i class="mr-1 text-xl las la-tachometer-alt"></i> --}}
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -27,7 +27,7 @@
                                     </div>
                                     <div class="header-buttons flex px-2 flex-shrink-0">
                                         <div class="ns-button default">
-                                            <button
+                                            <button wire:click='orders'
                                                 class="rounded shadow flex-shrink-0 bg-white h-12 flex items-center gap-x-1 px-2 py-1 text-sm">
                                                 <svg fill="#000000" height="18px" width="18px" version="1.1"
                                                     id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -108,9 +108,10 @@
                                                             <path d="M21 5v14" />
                                                         </svg>
                                                     </button>
-                                                    <form wire:submit="fbarcode" class="flex flex-auto items-center outline-none px-2">
-                                                        <input type="text" wire:model="barcode" class="mr-2 w-full" id="barcode"
-                                                            placeholder="Enter Barcode ..."
+                                                    <form wire:submit="fbarcode"
+                                                        class="flex flex-auto items-center outline-none px-2">
+                                                        <input type="text" wire:model="barcode" class="mr-2 w-full"
+                                                            id="barcode" placeholder="Enter Barcode ..."
                                                             class="w-full outline-none"><input type="submit"
                                                             class="btn  btn-sm btn-success rounded" value="Enter">
                                                     </form>
@@ -134,8 +135,7 @@
                                                     </div>
                                                     {{-- Cart Data --}}
                                                     @forelse ($selectedProducts as $index => $SP)
-                                                        <div
-                                                            class="w-full flex text-black font-semibold">
+                                                        <div class="w-full flex text-black font-semibold">
                                                             <div id="showProduct"
                                                                 class="w-full text-center lg:w-4/6 p-2 border border-l-0 border-t-0">
                                                                 {{ $SP['name'] }}
@@ -191,7 +191,8 @@
                                                                 <td width="200" class="border p-2"></td>
                                                                 <td width="200" class="border p-2">Total</td>
                                                                 <td width="200" class="border p-2 text-right">
-                                                                    Rs.<span id="billTotal">{{ $billTotal }}</span></td>
+                                                                    Rs.<span id="billTotal">{{ $billTotal }}</span>
+                                                                </td>
                                                             </tr>
                                                         </table>
                                                     </div>
@@ -321,6 +322,60 @@
                 </div>
             </div>
         </div>
+        <div class="fixed inset-0 overflow-y-auto {{ $modal }}" id="modal">
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="fixed inset-0 bg-gray-900 bg-opacity-50"></div>
+
+                <div class="bg-white rounded-lg z-50 p-6 max-w-lg w-full">
+                    <!-- Modal content goes here -->
+                    <h2 class="text-xl font-bold mb-1">Pending Orders</h2>
+                    <p class=" text-sm mb-4">Click on the order you want to select</p>
+                    <div class="overflow-x-auto overflow-y-scroll  max-h-96 ">
+                        <table class="table">
+                            <!-- head -->
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- row 1 -->
+                                @forelse ($pendingOrders as $order)
+                                    <tr class="hover cursor-pointer" wire:key='{{ $order->id }}'
+                                        wire:click='restoreOrder({{ $order->id }})'>
+                                        @if ($order->name != 0)
+                                            <td>{{ $order->name }}</td>
+                                        @else
+                                            <td>No Name Added</td>
+                                        @endif
+                                        <td>{{ \Carbon\Carbon::parse($order->sale_date)->format('d-m-Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($order->created_at)->format('H:i') }}</td>
+                                        <td>{{ $order->total_amount }}</td>
+                                    </tr>
+                                @empty
+                                @endforelse
+
+                                <!-- row 2 -->
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Close button -->
+                    <button onclick="closeModal()"
+                        class="bg-red-500 mt-2 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function closeModal() {
+                document.getElementById('modal').classList.add('hidden');
+            }
+        </script>
     </div>
     <script src="{{ asset('js/jquery.js') }}"></script>
     <script src="{{ asset('js/notify.js') }}"></script>
@@ -342,42 +397,67 @@
                         },
                         showCancelButton: true
                     });
-                    if (number) {$wire.dispatch('discount', {value:number}); }
+                    if (number) {
+                        $wire.dispatch('discount', {
+                            value: number
+                        });
+                    }
                 });
 
             });
 
-                $wire.on('extras', async () => {
-                    var billTotalText = $('#billTotal').text();
-                    console.log(billTotalText);
-                    var billTotal = parseFloat(billTotalText);
-                    console.log(billTotal);
-                const {value: number} = await Swal.fire({
-                        input: "number",
-                        inputLabel: "Amount",
-                        inputPlaceholder: "Enter Give Amount in Rs.",
-                        inputAttributes: {
-                            "aria-label": "Type Amount here"
-                        },
-                        showCancelButton: true
+            $wire.on('extras', async () => {
+                var billTotalText = $('#billTotal').text();
+                console.log(billTotalText);
+                var billTotal = parseFloat(billTotalText);
+                console.log(billTotal);
+                const {
+                    value: number
+                } = await Swal.fire({
+                    input: "number",
+                    inputLabel: "Amount",
+                    inputPlaceholder: "Enter Give Amount in Rs.",
+                    inputAttributes: {
+                        "aria-label": "Type Amount here"
+                    },
+                    showCancelButton: true
+                });
+                if (number) {
+                    var extra = number - billTotal;
+                    console.log(extra);
+                    Swal.fire(
+                        `The Rupees you have to return is ${extra}`
+                    );
+                }
+            });
+            $wire.on('hold', async () => {
+                console.log('hihihihihihihih');
+                // Swal.fire(`The Order Has Been set to HOLD`);
+                const {
+                    value: text
+                } = await Swal.fire({
+                    input: "text",
+                    inputLabel: "Order Name",
+                    inputPlaceholder: "Enter The Order Name:.",
+                    inputAttributes: {
+                        "aria-label": "Type Order Name"
+                    },
+                    showCancelButton: true
+                });
+                if (text) {
+                    $wire.dispatch('holdName', {
+                        name: text
                     });
-                    if (number) {
-                        var extra =number-billTotal;
-                        console.log(extra);
-                        Swal.fire(
-                            `The Rupees you have to return is ${extra}`
-                            );
-                     }
-                });
-                $wire.on('hold', () => {
-                    console.log('hihihihihihihih');
-                    Swal.fire(`The Order Has Been set to HOLD`);
-                });
+                }
+            });
 
-               
-          
+
+
             $wire.on('barError', () => {
                 $.notify("Wrong  Bar Code Number", "error");
+            });
+            $wire.on('notifyError', (e) => {
+                $.notify(`${e}`, "error");
             });
             $wire.on('overDiscount', (data) => {
                 const limit = data[0].limit;
@@ -388,6 +468,13 @@
                     text: `You have applied the discount of ${discount} but Only ${limit} can be applied`,
                 });
             });
+            $wire.on('modalError', (error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops... Error",
+                    text: `${error}`,
+                });
+            });
             $wire.on('resetBar', () => {
                 $('#barcode').val('');
                 // console.log('done');
@@ -396,6 +483,7 @@
                 $('#search').val('');
                 console.log('done');
             });
+            
         </script>
     @endscript
 </div>

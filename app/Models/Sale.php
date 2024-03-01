@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Sale extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'sale_date', 'total_amount','subtotal','discount','status'];
+    protected $fillable = ['user_id', 'sale_date','name', 'total_amount','subtotal','discount','status'];
 
     public function calculateProfit()
     {
