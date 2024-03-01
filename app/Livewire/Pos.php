@@ -127,8 +127,6 @@ class Pos extends Component
         return false;
     }
     
-
-
     function rest()
     {
         $this->selectedProducts = [];
@@ -320,6 +318,9 @@ class Pos extends Component
         // Update the UI or perform any additional actions as needed
     }
 
+    public function closeModal(){
+        $this->reset('modal','pendingOrders');
+    }
 
     public function render()
     {

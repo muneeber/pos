@@ -365,7 +365,7 @@
                     </div>
 
                     <!-- Close button -->
-                    <button onclick="closeModal()"
+                    <button wire:click='closeModal'
                         class="bg-red-500 mt-2 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none">Close</button>
                 </div>
             </div>
