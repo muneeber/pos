@@ -58,8 +58,14 @@
                         </tr>
                     @empty
                     @endforelse
+                 
                 </tbody>
             </table>
         </div>
     </div>
+            <div class="flex bg-white w-full rounded m-2 p-3 items-center justify-around">
+                <div> Σ Sub Total = {{ $sumSubTotal }}</div>
+                <div> Σ Total = {{ $sumTotal }}</div>
+                <div> Σ profit = {{ $sumProfit }}</div>
+        </div>
 </div>

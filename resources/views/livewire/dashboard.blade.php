@@ -3,7 +3,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <div class="stats shadow w-full">
+    <div class="stats shadow bg-white w-full">
 
         <div class="stat">
             <div class="stat-figure text-primary">
@@ -53,7 +53,7 @@
     <div class="flex">
         <livewire:sales-chart />
 
-        <div class="stats shadow h-36 m-3 p-3">
+        <div class="stats shadow bg-white h-36 m-3 p-3">
             <div class="stat-figure text-green-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
