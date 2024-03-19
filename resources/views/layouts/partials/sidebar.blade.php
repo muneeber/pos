@@ -1,4 +1,4 @@
-<aside class="flex flex-col w-64 h-screen px-5 pb-8 pt-2 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l ">
+<aside class="hidden sm:flex flex-col w-64 min-h-screen px-5 pb-8 pt-2 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l ">
     <div class="flex flex-col justify-between flex-1 mt-6">
         <nav class="-mx-3 space-y-6 ">
             <div class="space-y-3 ">

@@ -71,6 +71,26 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('product.create')" :active="request()->routeIs('product.create')">
+                {{ __('New Product') }}
+            </x-responsive-nav-link>
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('purchase.index')" :active="request()->routeIs('purchase.index')">
+                {{ __('Purchase') }}
+            </x-responsive-nav-link>
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('sales.index')" :active="request()->routeIs('sales.index')">
+                {{ __('Sale') }}
+            </x-responsive-nav-link>
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('stock.index')" :active="request()->routeIs('stock.index')">
+                {{ __('Stock') }}
+            </x-responsive-nav-link>
+        </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">

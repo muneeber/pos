@@ -34,7 +34,7 @@
             @endif
 
             <!-- Page Content -->
-            <main class="px-4 py-6">
+            <main class="sm:px-4 sm:py-6">
                 {{ $slot }}
             </main>
         </div>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
 use App\Models\Product;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
@@ -19,7 +20,15 @@ class EnterProduct extends Component
     #[Validate('required|numeric')]
     public $retailPrice = '';
 
+    public $shelf;
+    public $category;
+    public $categories;
+    public $company;
     // public $test="hi";
+    public function mount()
+    {
+       $this->categories=(Category::all());
+    }
 
     public function save()
     {
@@ -34,6 +43,9 @@ class EnterProduct extends Component
                 "stock_quantity" => $this->qty,
                 "sale_price" => $this->salePrice,
                 "retail_price" => $this->retailPrice,
+                "company" => $this->company,
+                "shelf" => $this->shelf,
+                "category_id" => $this->category,
             ];
             // dd($vd);
             $response = Product::create($vd);
@@ -50,8 +62,7 @@ class EnterProduct extends Component
                 $this->dispatch("productCreated");
                 // dd('done');
             }
-        }
-        else{
+        } else {
             $this->dispatch("priceError");
             $this->addError('salePrice', 'Sale Price should be geater or equal to retail price.');
         }
@@ -63,6 +74,7 @@ class EnterProduct extends Component
         $this->qty = '';
         $this->salePrice = '';
         $this->retailPrice = '';
+        $this->resetValidation();
     }
     public function render()
     {
