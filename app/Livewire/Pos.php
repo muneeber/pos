@@ -12,6 +12,8 @@ use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Cache\RateLimiting\Limit;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\Printer;
 
 
 class Pos extends Component
@@ -31,7 +33,20 @@ class Pos extends Component
     public $saleRestored = false;
     public $search = '';
     public $restoredSaleId;
+    public $response = 'Search for Something 😋';
 
+    // public function printBill()
+    public function hi()
+{
+    $connector = new FilePrintConnector("/dev/usb/lp0"); // Update with your USB device file
+    $printer = new Printer($connector);
+
+    // Add your bill content here
+    $printer->text("Your Bill Content Here\n");
+    $printer->cut();
+
+    $printer->close();
+}
 
 
 
@@ -57,7 +72,7 @@ class Pos extends Component
         if ($product) {
             // Check if the product already exists in selectedProducts
             $existingProductIndex = $this->findProductIndexById($product->id);
-    
+
             if ($existingProductIndex !== false) {
                 // Product already exists, increase its quantity
                 $this->selectedProducts[$existingProductIndex]['qty']++;
@@ -73,7 +88,7 @@ class Pos extends Component
                 ];
                 $this->selectedProducts[] = $selectedProduct;
             }
-    
+
             $this->billSubtotal += $product->sale_price;
             $this->calculateBill();
             $this->dispatch('resetBar');
@@ -82,51 +97,28 @@ class Pos extends Component
             $this->dispatch('resetBar');
         }
     }
-    
+
     public function fsearch()
     {
         if ($this->search == '*') {
             $this->products = Product::all();
         } else {
-            $product = Product::where('name', 'like', '%' . $this->search . '%')->first();
-            if ($product) {
-                // Check if the product already exists in selectedProducts
-                $existingProductIndex = $this->findProductIndexById($product->id);
-    
-                if ($existingProductIndex !== false) {
-                    // Product already exists, increase its quantity
-                    $this->selectedProducts[$existingProductIndex]['qty']++;
-                    $this->selectedProducts[$existingProductIndex]['totalPrice'] += $product->sale_price;
-                } else {
-                    // Product doesn't exist, add it as a new item
-                    $selectedProduct = [
-                        'id' => $product->id,
-                        'name' => $product->name,
-                        'price' => $product->sale_price,
-                        'qty' => 1,
-                        'totalPrice' => $product->sale_price
-                    ];
-                    $this->selectedProducts[] = $selectedProduct;
-                }
-    
-                $this->billSubtotal += $product->sale_price;
-                $this->calculateBill();
-                $this->dispatch('resetSearch');
+            $products = Product::where('name', 'like', '%' . $this->search . '%')->get();
+            if (count($products) == 0) {
+                $this->response = "Cant find any thing here 🤷‍♀️";
             }
+
+            $this->products = $products;
+
+
+            $this->calculateBill();
+            $this->dispatch('resetSearch');
         }
     }
-    
+
     // Helper function to find product index by ID in selectedProducts array
-    private function findProductIndexById($productId)
-    {
-        foreach ($this->selectedProducts as $index => $product) {
-            if ($product['id'] === $productId) {
-                return $index;
-            }
-        }
-        return false;
-    }
-    
+
+
     function rest()
     {
         $this->selectedProducts = [];
@@ -318,8 +310,9 @@ class Pos extends Component
         // Update the UI or perform any additional actions as needed
     }
 
-    public function closeModal(){
-        $this->reset('modal','pendingOrders');
+    public function closeModal()
+    {
+        $this->reset('modal', 'pendingOrders');
     }
 
     public function render()

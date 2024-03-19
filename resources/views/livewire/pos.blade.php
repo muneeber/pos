@@ -67,7 +67,7 @@
                                     <div class="header-buttons flex px-2 flex-shrink-0">
 
 
-                                        <div class="ns-button default"><button wire:click='check'
+                                        <div class="ns-button default"><button wire:click='hi'
                                                 class="rounded shadow bg-white flex-shrink-0 h-12 gap-1 flex items-center px-2 py-1 text-sm"><svg
                                                     xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -77,8 +77,7 @@
                                                     <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
                                                     <path d="M7 6h1v4" />
                                                     <path d="m16.71 13.88.7.71-2.82 2.82" />
-                                                </svg> <span>Cash
-                                                    Register</span></button></div>
+                                                </svg> <span>Tester</span></button></div>
                                     </div>
 
                                     <div wire:loading class="">
@@ -306,7 +305,7 @@
                                                             </div>
                                                         @empty
                                                             <div class="col-span-5">
-                                                                <h3 class="text-center text-bold">Nothing Here Yet!
+                                                                <h3 class="text-center text-bold text-xl mt-5">{{ $response }}
                                                                 </h3>
                                                             </div>
                                                         @endforelse
@@ -483,7 +482,6 @@
                 $('#search').val('');
                 console.log('done');
             });
-            
         </script>
     @endscript
 </div>
