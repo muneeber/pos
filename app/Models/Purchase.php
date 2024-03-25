@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Purchase extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'purchase_date', 'total_amount', 'supplier', 'notes'];
+    protected $fillable = ['user_id', 'purchase_date', 'total_amount', 'supplier', 'notes','image'];
 
     public function user():BelongsTo
     {

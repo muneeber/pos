@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Account;
 use Carbon\Carbon;
 use App\Models\Sale;
 use App\Models\Product;
@@ -12,8 +13,8 @@ use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Cache\RateLimiting\Limit;
-use Mike42\Escpos\PrintConnectors\FilePrintConnector;
-use Mike42\Escpos\Printer;
+// use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+// use Mike42\Escpos\Printer;
 
 
 class Pos extends Component
@@ -29,24 +30,22 @@ class Pos extends Component
     public $billSubtotal = 0;
     public $discount = 0;
     public $billTotal = 0;
-    public $pendingOrders = [];
-    public $saleRestored = false;
     public $search = '';
-    public $restoredSaleId;
+    public $accounts=[];
     public $response = 'Search for Something 😋';
 
     // public function printBill()
-    public function hi()
-{
-    $connector = new FilePrintConnector("/dev/usb/lp0"); // Update with your USB device file
-    $printer = new Printer($connector);
+//     public function hi()
+// {
+//     $connector = new FilePrintConnector("/dev/usb/lp0"); // Update with your USB device file
+//     $printer = new Printer($connector);
 
-    // Add your bill content here
-    $printer->text("Your Bill Content Here\n");
-    $printer->cut();
+//     // Add your bill content here
+//     $printer->text("Your Bill Content Here\n");
+//     $printer->cut();
 
-    $printer->close();
-}
+//     $printer->close();
+// }
 
 
 
@@ -70,15 +69,7 @@ class Pos extends Component
         $this->validate();
         $product = Product::where('barcode', $this->barcode)->first();
         if ($product) {
-            // Check if the product already exists in selectedProducts
-            $existingProductIndex = $this->findProductIndexById($product->id);
-
-            if ($existingProductIndex !== false) {
-                // Product already exists, increase its quantity
-                $this->selectedProducts[$existingProductIndex]['qty']++;
-                $this->selectedProducts[$existingProductIndex]['totalPrice'] += $product->sale_price;
-            } else {
-                // Product doesn't exist, add it as a new item
+           
                 $selectedProduct = [
                     'id' => $product->id,
                     'name' => $product->name,
@@ -87,13 +78,14 @@ class Pos extends Component
                     'totalPrice' => $product->sale_price
                 ];
                 $this->selectedProducts[] = $selectedProduct;
-            }
+            
 
             $this->billSubtotal += $product->sale_price;
             $this->calculateBill();
             $this->dispatch('resetBar');
         } else {
-            $this->dispatch('barError');
+            // $this->dispatch('barError');
+            $this->dispatch('notifyError', 'Wrong  Bar Code Number');
             $this->dispatch('resetBar');
         }
     }
@@ -169,16 +161,7 @@ class Pos extends Component
     public function pay()
     {
         // Check if the sale has already been restored
-        if ($this->saleRestored) {
-            // Update the existing sale record
-            $sale = Sale::findOrFail($this->restoredSaleId);
-
-            $sale->subtotal = $this->billSubtotal;
-            $sale->discount = $this->discount;
-            // $sale->status = 'completed';
-            $sale->total_amount = $this->billTotal;
-            $sale->save();
-        } else {
+        
             // Create a new sale record
             $pay = [
                 'user_id' => Auth::id(),
@@ -188,30 +171,16 @@ class Pos extends Component
                 'total_amount' => $this->billTotal
             ];
             $sale = Sale::create($pay);
-        }
-
-        // Add or update sale items
+    
         foreach ($this->selectedProducts as $product) {
-            // Check if a sale item already exists for the product in the current sale
-            $existingSaleItem = SaleItem::where('sale_id', $sale->id)
-                ->where('product_id', $product['id'])
-                ->first();
-
-            if ($existingSaleItem) {
-                // Update the quantity of the existing sale item
-                $existingSaleItem->quantity = $product['qty'];
-                $existingSaleItem->save();
-            } else {
-                // Create a new sale item
+      
                 SaleItem::create([
                     'sale_id' => $sale->id,
                     'product_id' => $product['id'],
                     'quantity' => $product['qty'],
                     'unit_price' => $product['price']
                 ]);
-            }
-
-            // Update product quantity
+            
             $productToUpdate = Product::findOrFail($product['id']);
             $productToUpdate->decrement('stock_quantity', $product['qty']);
         }
@@ -221,35 +190,26 @@ class Pos extends Component
         $this->rest();
     }
 
-    function hold()
-    {
-        Debugbar::addMessage('Check1', 'success');
-        if (count($this->selectedProducts) != 0) {
-            Debugbar::addMessage('Check2', 'success');
-
-            $this->dispatch('hold');
-        } else {
-            Debugbar::addMessage('Check3', 'success');
-            // $this->dispatch('notifyError', 'No Products Added');
-            $this->dispatch('modalError', 'No Products Added');
-        }
+    public function credit(){
+        $this->accounts=(Account::all());
+        $this->modal='';
     }
-    #[On('holdName')]
-    public function holdName($name)
-    {
-        // Debugbar::addMessage($name,'success');
-        // if (count($this->selectedProducts)!=0) {
+    public function khata($id){
+        Debugbar::addMessage('success');
+        if (count($this->selectedProducts)!=0) {
         # code...
+        
         $pay = ([
             'user_id' => Auth::id(),
+            'account_id'=>$id,
             'sale_date' => today(),
-            'status' => 'pending',
-            'name' => $name,
             'subtotal' => $this->billSubtotal,
             'discount' => $this->discount,
+            'status' => 'pending',
             'total_amount' => $this->billTotal
         ]);
         $sale = Sale::create($pay);
+        Account::find($id)->increment('credit_balance', $this->billTotal);
         foreach ($this->selectedProducts as $product) {
             SaleItem::create([
                 'sale_id' => $sale->id,
@@ -257,66 +217,121 @@ class Pos extends Component
                 'quantity' => $product['qty'],
                 'unit_price' => $product['price']
             ]);
+            $productToUpdate = Product::findOrFail($product['id']);
+            $productToUpdate->decrement('stock_quantity', $product['qty']);
         }
+        $this->modal='hidden';
         $this->rest();
-        // }
-        // else{
-        // Debugbar::addMessage('All Empty','warning');
-        // }
-    }
-
-    public function orders()
-    {
-        $threeDaysAgo = Carbon::now()->subDays(3);
-        $sales = Sale::where('status', 'pending')
-            ->where('sale_date', '>=', $threeDaysAgo)
-            ->orderBy('created_at', 'desc')
-            ->get();
-        $this->pendingOrders = ($sales);
-        $this->modal = '';
-    }
-
-    public function restoreOrder($id)
-    {
-        // dd($id);
-
-        // Retrieve the sale by its ID
-        $sale = Sale::findOrFail($id);
-        $this->restoredSaleId = $id;
-
-        // Retrieve the sale items associated with the sale
-        $saleItems = SaleItem::where('sale_id', $id)->get();
-
-        // Add the sale items back to the selected products list
-        foreach ($saleItems as $saleItem) {
-            $product = Product::findOrFail($saleItem->product_id);
-
-            $selectedProduct = [
-                'id' => $product->id,
-                'name' => $product->name,
-                'price' => $product->sale_price,
-                'qty' => $saleItem->quantity,
-                'totalPrice' => $saleItem->unit_price * $saleItem->quantity
-            ];
-
-            $this->selectedProducts[] = $selectedProduct;
         }
-        $this->saleRestored = true;
-
-        // Recalculate the bill
-        $this->calculateBill();
-        $this->modal = 'hidden';
-
-        // Update the UI or perform any additional actions as needed
+        else{
+        Debugbar::addMessage('All Empty','warning');
+        $this->modal='hidden';
+        $this->rest();
+        $this->dispatch('notifyError', 'No Items Selected');
+        }
     }
-
-    public function closeModal()
-    {
-        $this->reset('modal', 'pendingOrders');
-    }
-
+    
     public function render()
     {
         return view('livewire.pos')->layout('layouts.posLayout');
     }
 }
+
+
+// ----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+// function hold()
+    // {
+        // Debugbar::addMessage('Check1', 'success');
+        // if (count($this->selectedProducts) != 0) {
+        //     Debugbar::addMessage('Check2', 'success');
+
+        //     $this->dispatch('hold');
+        // } else {
+        //     Debugbar::addMessage('Check3', 'success');
+        //     // $this->dispatch('notifyError', 'No Products Added');
+        //     $this->dispatch('modalError', 'No Products Added');
+        // }
+    // }
+    // #[On('holdName')]
+    // public function holdName($name)
+    // {
+    //     // Debugbar::addMessage($name,'success');
+    //     // if (count($this->selectedProducts)!=0) {
+    //     # code...
+    //     $pay = ([
+    //         'user_id' => Auth::id(),
+    //         'sale_date' => today(),
+    //         'status' => 'pending',
+    //         'name' => $name,
+    //         'subtotal' => $this->billSubtotal,
+    //         'discount' => $this->discount,
+    //         'total_amount' => $this->billTotal
+    //     ]);
+    //     $sale = Sale::create($pay);
+    //     foreach ($this->selectedProducts as $product) {
+    //         SaleItem::create([
+    //             'sale_id' => $sale->id,
+    //             'product_id' => $product['id'],
+    //             'quantity' => $product['qty'],
+    //             'unit_price' => $product['price']
+    //         ]);
+    //     }
+    //     $this->rest();
+    //     // }
+    //     // else{
+    //     // Debugbar::addMessage('All Empty','warning');
+    //     // }
+    // }
+
+    // public function orders()
+    // {
+    //     $threeDaysAgo = Carbon::now()->subDays(3);
+    //     $sales = Sale::where('status', 'pending')
+    //         ->where('sale_date', '>=', $threeDaysAgo)
+    //         ->orderBy('created_at', 'desc')
+    //         ->get();
+    //     $this->pendingOrders = ($sales);
+    //     $this->modal = '';
+    // }
+
+    // public function restoreOrder($id)
+    // {
+    //     // dd($id);
+
+    //     // Retrieve the sale by its ID
+    //     $sale = Sale::findOrFail($id);
+    //     $this->restoredSaleId = $id;
+
+    //     // Retrieve the sale items associated with the sale
+    //     $saleItems = SaleItem::where('sale_id', $id)->get();
+
+    //     // Add the sale items back to the selected products list
+    //     foreach ($saleItems as $saleItem) {
+    //         $product = Product::findOrFail($saleItem->product_id);
+
+    //         $selectedProduct = [
+    //             'id' => $product->id,
+    //             'name' => $product->name,
+    //             'price' => $product->sale_price,
+    //             'qty' => $saleItem->quantity,
+    //             'totalPrice' => $saleItem->unit_price * $saleItem->quantity
+    //         ];
+
+    //         $this->selectedProducts[] = $selectedProduct;
+    //     }
+    //     $this->saleRestored = true;
+
+    //     // Recalculate the bill
+    //     $this->calculateBill();
+    //     $this->modal = 'hidden';
+
+    //     // Update the UI or perform any additional actions as needed
+    // }
+
+   
+
+    

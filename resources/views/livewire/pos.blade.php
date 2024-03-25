@@ -78,7 +78,21 @@
                                                     <path d="M7 6h1v4" />
                                                     <path d="m16.71 13.88.7.71-2.82 2.82" />
                                                 </svg> <span>Tester</span></button></div>
+                                                
                                     </div>
+                                    <div class="ns-button default"><button wire:click='hi'
+                                        class="rounded shadow bg-white flex-shrink-0 h-12 gap-1 flex items-center px-2 py-1 text-sm"><svg
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                            class="lucide lucide-coins">
+                                            <circle cx="8" cy="8" r="6" />
+                                            <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
+                                            <path d="M7 6h1v4" />
+                                            <path d="m16.71 13.88.7.71-2.82 2.82" />
+                                        </svg> <span>Tester</span></button></div>
+                                        
+                            {{-- </div> --}}
 
                                     <div wire:loading class="">
                                         <span class="loading loading-spinner loading-lg"></span>
@@ -211,7 +225,7 @@
                                                             </svg><span
                                                                 class="text-lg hidden md:inline lg:text-2xl">Pay</span>
                                                         </button>
-                                                        <div id="hold-button" wire:click='hold'
+                                                        <div id="hold-button" wire:click='credit'
                                                             class="flex-shrink-0 w-1/4 flex items-center gap-2 font-bold cursor-pointer justify-center bg-blue-500 text-white border-r hover:bg-blue-600 border-blue-600 flex-auto"
                                                             settings="[object Object]"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" width="24"
@@ -222,7 +236,7 @@
                                                                 <rect width="4" height="16" x="6" y="4" />
                                                                 <rect width="4" height="16" x="14" y="4" />
                                                             </svg><span
-                                                                class="text-lg hidden md:inline lg:text-2xl">Hold</span>
+                                                                class="text-lg hidden md:inline lg:text-2xl">Credit</span>
                                                         </div>
                                                         <div id="discount-button"
                                                             class="flex-shrink-0 w-1/4 flex items-center gap-2 font-bold cursor-pointer justify-center border-r border-box-edge flex-auto">
@@ -327,44 +341,35 @@
 
                 <div class="bg-white rounded-lg z-50 p-6 max-w-lg w-full">
                     <!-- Modal content goes here -->
-                    <h2 class="text-xl font-bold mb-1">Pending Orders</h2>
-                    <p class=" text-sm mb-4">Click on the order you want to select</p>
+                    <h2 class="text-xl font-bold mb-1">Accounts</h2>
+                    <p class=" text-sm mb-4">Click on the Account you want to select</p>
                     <div class="overflow-x-auto overflow-y-scroll  max-h-96 ">
                         <table class="table">
                             <!-- head -->
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Price</th>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    {{-- <th>Price</th> --}}
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- row 1 -->
-                                @forelse ($pendingOrders as $order)
-                                    <tr class="hover cursor-pointer" wire:key='{{ $order->id }}'
-                                        wire:click='restoreOrder({{ $order->id }})'>
-                                        @if ($order->name != 0)
-                                            <td>{{ $order->name }}</td>
-                                        @else
-                                            <td>No Name Added</td>
-                                        @endif
-                                        <td>{{ \Carbon\Carbon::parse($order->sale_date)->format('d-m-Y') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($order->created_at)->format('H:i') }}</td>
-                                        <td>{{ $order->total_amount }}</td>
+                                @forelse ($accounts as $account)
+                                    <tr class="hover cursor-pointer" wire:key="{{ $account->id }}" wire:click='khata({{ $account->id }})'>
+                                        <td>{{ $account->id }}</td>
+                                        <td>{{ $account->Name }}</td>
+                                        <td>{{ $account->Contact }}</td>
                                     </tr>
                                 @empty
                                 @endforelse
-
-                                <!-- row 2 -->
-
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Close button -->
-                    <button wire:click='closeModal'
+                    <button onclick="closeModal()"
                         class="bg-red-500 mt-2 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none">Close</button>
                 </div>
             </div>
@@ -429,35 +434,16 @@
                     );
                 }
             });
-            $wire.on('hold', async () => {
-                console.log('hihihihihihihih');
-                // Swal.fire(`The Order Has Been set to HOLD`);
-                const {
-                    value: text
-                } = await Swal.fire({
-                    input: "text",
-                    inputLabel: "Order Name",
-                    inputPlaceholder: "Enter The Order Name:.",
-                    inputAttributes: {
-                        "aria-label": "Type Order Name"
-                    },
-                    showCancelButton: true
-                });
-                if (text) {
-                    $wire.dispatch('holdName', {
-                        name: text
-                    });
-                }
-            });
+            
 
 
 
-            $wire.on('barError', () => {
-                $.notify("Wrong  Bar Code Number", "error");
-            });
-            $wire.on('notifyError', (e) => {
-                $.notify(`${e}`, "error");
-            });
+            // $wire.on('barError', () => {
+            //     $.notify("Wrong  Bar Code Number", "error");
+            // });
+            // $wire.on('notifyError', (e) => {
+            //     $.notify(`${e}`, "error");
+            // });
             $wire.on('overDiscount', (data) => {
                 const limit = data[0].limit;
                 const discount = data[0].discount;
@@ -484,4 +470,5 @@
             });
         </script>
     @endscript
+    @include('livewire.err')
 </div>

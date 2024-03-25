@@ -35,7 +35,13 @@
                     @forelse ($sales as $sale)
                         <tr class="hover">
                             <th>{{ $sale->id }}</th>
-                            <td>Cy Ganderton</td>
+                            @if ($sale->account)
+                                
+                            <td>{{ $sale->account->Name }}</td>
+                            @else
+                            <td>{{ $sale->user->name }}</td>
+                                
+                            @endif
                             @if (\Carbon\Carbon::parse($sale->sale_date)->format('d-m-Y') == $today)
                                 <td class="">
                                     <div class="badge  bg-blue-500 text-gray-100">Today</div>
@@ -47,7 +53,7 @@
                                 @if ($sale->status == 'completed')
                                     <div class="badge bg-green-500 text-gray-100">{{ $sale->status }}</div>
                                 @elseif ($sale->status == 'pending')
-                                    <div class="badge bg-amber-500 text-gray-100">On Hold</div>
+                                    <div class="badge bg-amber-500 text-gray-100">Credit</div>
                                 @endif
                             </td>
                             <td>{{ $sale->subtotal }}</td>

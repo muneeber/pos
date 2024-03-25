@@ -2,11 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Models\Purchase;
 use App\Models\Sale;
 use Livewire\Component;
 
-class Sales extends Component
+class AllPurchase extends Component
 {
+
+
     public $startDate;
     public $endDate;
     public $sales;
@@ -25,8 +28,8 @@ class Sales extends Component
         $this->startDate = $today->subDays(3)->format('Y-m-d');
 
         // Fetch sales data within the specified date range
-        $this->sales = Sale::with('account','user')->whereBetween('sale_date', [$this->startDate, $this->endDate])->get()->map(function ($sale) {
-            $sale->profit = $sale->calculateProfit();
+
+        $this->sales = Purchase::with('user')->whereBetween('purchase_date', [$this->startDate, $this->endDate])->get()->map(function ($sale) {
 
             // Increment sum of subtotal, total, and profit
             $this->sumSubTotal += $sale->subtotal;
@@ -40,7 +43,7 @@ class Sales extends Component
 
     public function byDate()
     {
-        $this->sales = Sale::with('account','user')->whereBetween('sale_date', [$this->startDate, $this->endDate])->get()->map(function ($sale) {
+        $this->sales = Sale::with('account', 'user')->whereBetween('sale_date', [$this->startDate, $this->endDate])->get()->map(function ($sale) {
             $sale->profit = $sale->calculateProfit();
 
             // Increment sum of subtotal, total, and profit
@@ -52,22 +55,10 @@ class Sales extends Component
         });
     }
 
-    public function byStatus()
-    {
-        $this->sales = Sale::with('account','user')->where('status', $this->status)->get()->map(function ($sale) {
-            $sale->profit = $sale->calculateProfit();
 
-            // Increment sum of subtotal, total, and profit
-            $this->sumSubTotal += $sale->subtotal;
-            $this->sumTotal += $sale->total_amount;
-            $this->sumProfit += $sale->profit;
-
-            return $sale;
-        });
-    }
 
     public function render()
     {
-        return view('livewire.sales');
+        return view('livewire.all-purchase');
     }
 }

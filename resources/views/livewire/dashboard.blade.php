@@ -1,11 +1,11 @@
-<div>
+<div class="m-2">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <div class="stats shadow bg-white w-full">
+    <div class="sm:stats rounded sm:remove:flex sm:remove:flex-wrap sm:remove:gap-y-2 shadow bg-white w-full">
 
-        <div class="stat">
+        <div class="stat border">
             <div class="stat-figure text-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -22,7 +22,7 @@
             <div class="stat-value text-primary ml-2">{{ $sales }}</div>
             <div class="stat-desc">Its a good start</div>
         </div>
-        <div class="stat">
+        <div class="stat border">
             <div class="stat-figure text-neutral">
                 <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -36,7 +36,22 @@
             <div class="stat-value text-neutral">{{ $todaySale }} .Rs</div>
             <div class="stat-desc">21% more than last month</div>
         </div>
-        <div class="stat">
+        <div class="stat border sm:hidden">
+            <div class="stat-figure text-green-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-coins">
+                <circle cx="8" cy="8" r="6" />
+                <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
+                <path d="M7 6h1v4" />
+                <path d="m16.71 13.88.7.71-2.82 2.82" />
+            </svg>
+            </div>
+            <div class="stat-title">Total Profit this Month</div>
+            <div class="stat-value ">{{ $ptm }} .Rs</div>
+            {{-- <div class="stat-desc">21% more than last month</div> --}}
+        </div>
+        <div class="stat border">
             <div class="stat-figure text-accent">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                     class="inline-block w-8 h-8 stroke-current">
@@ -48,12 +63,13 @@
             <div class="stat-value text-accent">{{ $monthlySale }} .Rs</div>
             <div class="stat-desc">21% more than last month</div>
         </div>
+       
     </div>
 
-    <div class="flex">
+    <div class="sm:flex">
         <livewire:sales-chart />
 
-        <div class="stats shadow bg-white h-36 m-3 p-3">
+        <div class="stats  sm:remove:hidden shadow bg-white h-36 m-3 p-3">
             <div class="stat-figure text-green-500">
                 <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"

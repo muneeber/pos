@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sale extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'sale_date','name', 'total_amount','subtotal','discount','status'];
+    protected $fillable = ['user_id', 'sale_date','name', 'total_amount','subtotal','discount','status','payment_method',
+    'account_id'];
 
     public function calculateProfit()
     {
@@ -36,13 +39,17 @@ class Sale extends Model
         return $totalProfitThisMonth;
     }
     
-    public function user()
+    public function user():BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function saleItems()
+    public function saleItems():HasMany
     {
         return $this->hasMany(SaleItem::class);
+    }
+    public function account():BelongsTo
+    {
+        return $this->belongsTo(Account::class);
     }
 }
