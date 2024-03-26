@@ -16,21 +16,29 @@ class SalesChart extends Component
         // Retrieve sales data and corresponding dates for the last two weeks
         $endDate = Carbon::today();
         $startDate = Carbon::today()->subDays(14);
-        $sales = Sale::whereBetween('sale_date', [$startDate, $endDate])->where('status','completed')
+        $sales = Sale::whereBetween('sale_date', [$startDate, $endDate])
+            ->where('status', 'completed')
             ->orderBy('sale_date')
             ->get();
-
+    
+        // Group sales by date and calculate total sales for each date
+        $salesByDate = $sales->groupBy(function ($sale) {
+            return Carbon::parse($sale->sale_date)->format('Y-m-d');
+        });
+    
         // Populate the sales data and dates arrays
-        // Populate the sales data and dates arrays
-        foreach ($sales as $sale) {
-            // Convert sale_date string to Carbon instance
-            $saleDate = Carbon::parse($sale->sale_date);
+        foreach ($salesByDate as $date => $sales) {
+            // Calculate total sales for this date
+            $totalSales = $sales->sum('total_amount');
             // Format the date
-            $this->dates[] = $saleDate->format('d F');
+            $formattedDate = Carbon::parse($date)->format('d F');
             // Populate the sales data array
-            $this->salesData[] = $sale->total_amount;
+            $this->dates[] = $formattedDate;
+            // Populate the total sales data array
+            $this->salesData[] = $totalSales;
         }
     }
+    
     public function render()
     {
         return view('livewire.sales-chart');
