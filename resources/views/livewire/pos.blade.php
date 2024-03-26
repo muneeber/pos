@@ -25,29 +25,7 @@
                                             </a>
                                         </div>
                                     </div>
-                                    <div class="header-buttons flex px-2 flex-shrink-0">
-                                        <div class="ns-button default">
-                                            <button wire:click='orders'
-                                                class="rounded shadow flex-shrink-0 bg-white h-12 flex items-center gap-x-1 px-2 py-1 text-sm">
-                                                <svg fill="#000000" height="18px" width="18px" version="1.1"
-                                                    id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                                                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                                                    viewBox="0 0 203.079 203.079" xml:space="preserve">
-                                                    <path d="M192.231,104.082V102c0-12.407-10.094-22.5-22.5-22.5c-2.802,0-5.484,0.519-7.961,1.459
-                                                   C159.665,70.722,150.583,63,139.731,63c-2.947,0-5.76,0.575-8.341,1.61C128.667,55.162,119.624,48,109.231,48
-                                                   c-2.798,0-5.496,0.541-8,1.516V22.5c0-12.407-10.094-22.5-22.5-22.5s-22.5,10.093-22.5,22.5v66.259
-                                                   c-3.938-5.029-8.673-9.412-14.169-11.671c-6.133-2.52-12.587-2.219-18.667,0.872c-11.182,5.686-15.792,19.389-10.277,30.548
-                                                   l27.95,56.563c0.79,1.552,19.731,38.008,54.023,38.008h40c31.54,0,57.199-25.794,57.199-57.506l-0.031-41.491H192.231z
-                                                    M135.092,188.079h-40c-24.702,0-40.091-28.738-40.646-29.796l-27.88-56.42c-1.924-3.893-0.33-8.519,3.629-10.532
-                                                   c2.182-1.11,4.081-1.223,6.158-0.372c8.281,3.395,16.41,19.756,19.586,29.265l2.41,7.259l12.883-4.559V22.5
-                                                   c0-4.136,3.364-7.5,7.5-7.5s7.5,3.364,7.5,7.5V109h0.136h14.864h0.136V71c0-4.187,3.748-8,7.864-8c4.262,0,8,3.505,8,7.5v15v26h15
-                                                   v-26c0-4.136,3.364-7.5,7.5-7.5s7.5,3.364,7.5,7.5V102v16.5h15V102c0-4.136,3.364-7.5,7.5-7.5s7.5,3.364,7.5,7.5v10.727h0.035
-                                                   l0.025,32.852C177.291,169.014,158.36,188.079,135.092,188.079z" />
-                                                </svg>
-                                                <span>Orders</span>
-                                            </button>
-                                        </div>
-                                    </div>
+
                                     <div class="header-buttons flex px-2 flex-shrink-0">
                                         <div class="ns-button error">
 
@@ -65,34 +43,34 @@
                                         </div>
                                     </div>
                                     <div class="header-buttons flex px-2 flex-shrink-0">
-
-
-                                        <div class="ns-button default"><button wire:click='hi'
-                                                class="rounded shadow bg-white flex-shrink-0 h-12 gap-1 flex items-center px-2 py-1 text-sm"><svg
-                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        <div class="ns-button default">
+                                            <button id='custom'
+                                                class="rounded shadow flex-shrink-0 bg-white h-12 flex gap-x-2 items-center px-2 py-1 text-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                    class="lucide lucide-coins">
-                                                    <circle cx="8" cy="8" r="6" />
-                                                    <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
-                                                    <path d="M7 6h1v4" />
-                                                    <path d="m16.71 13.88.7.71-2.82 2.82" />
-                                                </svg> <span>Tester</span></button></div>
-                                                
+                                                    class="lucide lucide-square-plus">
+                                                    <rect width="18" height="18" x="3" y="3" rx="2" />
+                                                    <path d="M8 12h8" />
+                                                    <path d="M12 8v8" />
+                                                </svg>
+                                                <span class=' font-bold'>Add Custom Item</span>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="ns-button default"><button wire:click='hi'
-                                        class="rounded shadow bg-white flex-shrink-0 h-12 gap-1 flex items-center px-2 py-1 text-sm"><svg
-                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-coins">
-                                            <circle cx="8" cy="8" r="6" />
-                                            <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
-                                            <path d="M7 6h1v4" />
-                                            <path d="m16.71 13.88.7.71-2.82 2.82" />
-                                        </svg> <span>Tester</span></button></div>
-                                        
-                            {{-- </div> --}}
+                                    {{-- <div class="header-buttons flex px-2 flex-shrink-0">
+                                        <div class="ns-button error">
+
+                                            <button wire:click='test'
+                                                class="rounded shadow flex-shrink-0 bg-white gap-1 text-black h-12 flex items-center px-2 py-1 text-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list-todo"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="m3 17 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>
+                                                <span>Tester</span></button>
+                                        </div>
+                                    </div> --}}
+
+
+
+                                    {{-- </div> --}}
 
                                     <div wire:loading class="">
                                         <span class="loading loading-spinner loading-lg"></span>
@@ -146,6 +124,20 @@
                                                             class="hidden lg:flex lg:w-1/6 p-2 border border-r-0 border-t-0">
                                                             Total</div>
                                                     </div>
+                                                  <form wire:submit.prevent='custom' id='customForm' class="flex hidden">
+                                                    <div class="border w-4/6">
+                                                          <input type="text" required wire:model='Cproduct' class=" w-full" placeholder="Enter Product Name">
+                                                    </div>
+                                                    <div class="border w-1/6">
+                                                          <input type="text" required wire:model='Cqty' class=" w-full" placeholder="Qty">
+                                                    </div>
+                                                    <div class="border w-1/6">
+                                                          <input type="text" required  wire:model='Cprice' class=" w-full" placeholder="Price">
+                                                    </div>
+                                                    <div class="border w-1/6">
+                                                        <button type="submit" class='hidden'>hi</button>
+                                                    </div>
+                                                  </form>
                                                     {{-- Cart Data --}}
                                                     @forelse ($selectedProducts as $index => $SP)
                                                         <div class="w-full flex text-black font-semibold">
@@ -319,7 +311,8 @@
                                                             </div>
                                                         @empty
                                                             <div class="col-span-5">
-                                                                <h3 class="text-center text-bold text-xl mt-5">{{ $response }}
+                                                                <h3 class="text-center text-bold text-xl mt-5">
+                                                                    {{ $response }}
                                                                 </h3>
                                                             </div>
                                                         @endforelse
@@ -357,7 +350,8 @@
                             <tbody>
                                 <!-- row 1 -->
                                 @forelse ($accounts as $account)
-                                    <tr class="hover cursor-pointer" wire:key="{{ $account->id }}" wire:click='khata({{ $account->id }})'>
+                                    <tr class="hover cursor-pointer" wire:key="{{ $account->id }}"
+                                        wire:click='khata({{ $account->id }})'>
                                         <td>{{ $account->id }}</td>
                                         <td>{{ $account->Name }}</td>
                                         <td>{{ $account->Contact }}</td>
@@ -375,6 +369,7 @@
             </div>
         </div>
 
+
         <script>
             function closeModal() {
                 document.getElementById('modal').classList.add('hidden');
@@ -387,6 +382,16 @@
         <script>
             // Wait for the DOM to be ready
             $(document).ready(function() {
+                $('#custom').click(function (e) { 
+                    e.preventDefault();
+                    $('#customForm').removeClass('hidden');
+                });
+                $wire.on('Crest', async () => {
+                    console.log('uff');
+                    $('#customForm').addClass('hidden');
+                    $('#customForm').find('input').val('');
+
+                })
                 // Add click event handler to the button
                 $('#discount-button').click(async function() {
                     // Trigger SweetAler
@@ -434,7 +439,7 @@
                     );
                 }
             });
-            
+
 
 
 

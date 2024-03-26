@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Account;
+use App\Models\CustomItem;
 use Carbon\Carbon;
 use App\Models\Sale;
 use App\Models\Product;
@@ -31,21 +32,24 @@ class Pos extends Component
     public $discount = 0;
     public $billTotal = 0;
     public $search = '';
-    public $accounts=[];
+    public $accounts = [];
     public $response = 'Search for Something 😋';
+    public $Cproduct;
+    public $Cqty;
+    public $Cprice;
 
     // public function printBill()
-//     public function hi()
-// {
-//     $connector = new FilePrintConnector("/dev/usb/lp0"); // Update with your USB device file
-//     $printer = new Printer($connector);
+    //     public function hi()
+    // {
+    //     $connector = new FilePrintConnector("/dev/usb/lp0"); // Update with your USB device file
+    //     $printer = new Printer($connector);
 
-//     // Add your bill content here
-//     $printer->text("Your Bill Content Here\n");
-//     $printer->cut();
+    //     // Add your bill content here
+    //     $printer->text("Your Bill Content Here\n");
+    //     $printer->cut();
 
-//     $printer->close();
-// }
+    //     $printer->close();
+    // }
 
 
 
@@ -69,16 +73,16 @@ class Pos extends Component
         $this->validate();
         $product = Product::where('barcode', $this->barcode)->first();
         if ($product) {
-           
-                $selectedProduct = [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'price' => $product->sale_price,
-                    'qty' => 1,
-                    'totalPrice' => $product->sale_price
-                ];
-                $this->selectedProducts[] = $selectedProduct;
-            
+
+            $selectedProduct = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->sale_price,
+                'qty' => 1,
+                'totalPrice' => $product->sale_price
+            ];
+            $this->selectedProducts[] = $selectedProduct;
+
 
             $this->billSubtotal += $product->sale_price;
             $this->calculateBill();
@@ -142,6 +146,8 @@ class Pos extends Component
         $this->selectedProducts[] = $selectedProduct; // Append the product info to selectedProducts array
         $this->calculateBill();
     }
+
+
     #[On('discount')]
     public function discount($value)
     {
@@ -160,29 +166,36 @@ class Pos extends Component
     }
     public function pay()
     {
-        // Check if the sale has already been restored
-        
-            // Create a new sale record
-            $pay = [
-                'user_id' => Auth::id(),
-                'sale_date' => today(),
-                'subtotal' => $this->billSubtotal,
-                'discount' => $this->discount,
-                'total_amount' => $this->billTotal
-            ];
-            $sale = Sale::create($pay);
-    
+
+        $pay = [
+            'user_id' => Auth::id(),
+            'sale_date' => today(),
+            'subtotal' => $this->billSubtotal,
+            'discount' => $this->discount,
+            'total_amount' => $this->billTotal
+        ];
+        $sale = Sale::create($pay);
+
         foreach ($this->selectedProducts as $product) {
-      
+            if ($product['id'] == 'c') {
+                 CustomItem::create([
+                    'sale_id' => $sale->id,
+                    'product_name' => $product['name'],
+                    'quantity' => $product['qty'],
+                    'unit_price' => $product['price']
+                ]);
+            } else {
+
                 SaleItem::create([
                     'sale_id' => $sale->id,
                     'product_id' => $product['id'],
                     'quantity' => $product['qty'],
                     'unit_price' => $product['price']
                 ]);
-            
-            $productToUpdate = Product::findOrFail($product['id']);
-            $productToUpdate->decrement('stock_quantity', $product['qty']);
+
+                $productToUpdate = Product::findOrFail($product['id']);
+                $productToUpdate->decrement('stock_quantity', $product['qty']);
+            }
         }
 
         // Reset the component state
@@ -190,148 +203,71 @@ class Pos extends Component
         $this->rest();
     }
 
-    public function credit(){
-        $this->accounts=(Account::all());
-        $this->modal='';
+    public function credit()
+    {
+        $this->accounts = (Account::all());
+        $this->modal = '';
     }
-    public function khata($id){
+    public function khata($id)
+    {
         Debugbar::addMessage('success');
-        if (count($this->selectedProducts)!=0) {
-        # code...
-        
-        $pay = ([
-            'user_id' => Auth::id(),
-            'account_id'=>$id,
-            'sale_date' => today(),
-            'subtotal' => $this->billSubtotal,
-            'discount' => $this->discount,
-            'status' => 'pending',
-            'total_amount' => $this->billTotal
-        ]);
-        $sale = Sale::create($pay);
-        Account::find($id)->increment('credit_balance', $this->billTotal);
-        foreach ($this->selectedProducts as $product) {
-            SaleItem::create([
-                'sale_id' => $sale->id,
-                'product_id' => $product['id'],
-                'quantity' => $product['qty'],
-                'unit_price' => $product['price']
+        if (count($this->selectedProducts) != 0) {
+            # code...
+
+            $pay = ([
+                'user_id' => Auth::id(),
+                'account_id' => $id,
+                'sale_date' => today(),
+                'subtotal' => $this->billSubtotal,
+                'discount' => $this->discount,
+                'status' => 'pending',
+                'total_amount' => $this->billTotal
             ]);
-            $productToUpdate = Product::findOrFail($product['id']);
-            $productToUpdate->decrement('stock_quantity', $product['qty']);
-        }
-        $this->modal='hidden';
-        $this->rest();
-        }
-        else{
-        Debugbar::addMessage('All Empty','warning');
-        $this->modal='hidden';
-        $this->rest();
-        $this->dispatch('notifyError', 'No Items Selected');
+            $sale = Sale::create($pay);
+            Account::find($id)->increment('credit_balance', $this->billTotal);
+            foreach ($this->selectedProducts as $product) {
+                SaleItem::create([
+                    'sale_id' => $sale->id,
+                    'product_id' => $product['id'],
+                    'quantity' => $product['qty'],
+                    'unit_price' => $product['price']
+                ]);
+                $productToUpdate = Product::findOrFail($product['id']);
+                $productToUpdate->decrement('stock_quantity', $product['qty']);
+            }
+            $this->modal = 'hidden';
+            $this->rest();
+        } else {
+            Debugbar::addMessage('All Empty', 'warning');
+            $this->modal = 'hidden';
+            $this->rest();
+            $this->dispatch('notifyError', 'No Items Selected');
         }
     }
-    
+    public function test()
+    {
+        dd($this->selectedProducts);
+    }
+    public function custom()
+    {
+        //  dd($this->Cproduct,$this->Cqty,$this->Cprice);
+        $selectedProduct = [
+            'id' => 'c',
+            'name' => $this->Cproduct,
+            'price' => $this->Cprice,
+            'qty' => $this->Cqty,
+            'totalPrice' => $this->Cqty * $this->Cprice,
+        ];
+        $this->billSubtotal += $this->Cprice;
+        $this->selectedProducts[] = $selectedProduct; // Append the product info to selectedProducts array
+        $this->reset('Cproduct', 'Cprice', 'Cqty');
+        $this->dispatch('Crest');
+        $this->calculateBill();
+    }
+
+
     public function render()
     {
         return view('livewire.pos')->layout('layouts.posLayout');
     }
 }
-
-
-// ----------------------------------------------------------------------------------------------------------------------
-
-
-
-
-// function hold()
-    // {
-        // Debugbar::addMessage('Check1', 'success');
-        // if (count($this->selectedProducts) != 0) {
-        //     Debugbar::addMessage('Check2', 'success');
-
-        //     $this->dispatch('hold');
-        // } else {
-        //     Debugbar::addMessage('Check3', 'success');
-        //     // $this->dispatch('notifyError', 'No Products Added');
-        //     $this->dispatch('modalError', 'No Products Added');
-        // }
-    // }
-    // #[On('holdName')]
-    // public function holdName($name)
-    // {
-    //     // Debugbar::addMessage($name,'success');
-    //     // if (count($this->selectedProducts)!=0) {
-    //     # code...
-    //     $pay = ([
-    //         'user_id' => Auth::id(),
-    //         'sale_date' => today(),
-    //         'status' => 'pending',
-    //         'name' => $name,
-    //         'subtotal' => $this->billSubtotal,
-    //         'discount' => $this->discount,
-    //         'total_amount' => $this->billTotal
-    //     ]);
-    //     $sale = Sale::create($pay);
-    //     foreach ($this->selectedProducts as $product) {
-    //         SaleItem::create([
-    //             'sale_id' => $sale->id,
-    //             'product_id' => $product['id'],
-    //             'quantity' => $product['qty'],
-    //             'unit_price' => $product['price']
-    //         ]);
-    //     }
-    //     $this->rest();
-    //     // }
-    //     // else{
-    //     // Debugbar::addMessage('All Empty','warning');
-    //     // }
-    // }
-
-    // public function orders()
-    // {
-    //     $threeDaysAgo = Carbon::now()->subDays(3);
-    //     $sales = Sale::where('status', 'pending')
-    //         ->where('sale_date', '>=', $threeDaysAgo)
-    //         ->orderBy('created_at', 'desc')
-    //         ->get();
-    //     $this->pendingOrders = ($sales);
-    //     $this->modal = '';
-    // }
-
-    // public function restoreOrder($id)
-    // {
-    //     // dd($id);
-
-    //     // Retrieve the sale by its ID
-    //     $sale = Sale::findOrFail($id);
-    //     $this->restoredSaleId = $id;
-
-    //     // Retrieve the sale items associated with the sale
-    //     $saleItems = SaleItem::where('sale_id', $id)->get();
-
-    //     // Add the sale items back to the selected products list
-    //     foreach ($saleItems as $saleItem) {
-    //         $product = Product::findOrFail($saleItem->product_id);
-
-    //         $selectedProduct = [
-    //             'id' => $product->id,
-    //             'name' => $product->name,
-    //             'price' => $product->sale_price,
-    //             'qty' => $saleItem->quantity,
-    //             'totalPrice' => $saleItem->unit_price * $saleItem->quantity
-    //         ];
-
-    //         $this->selectedProducts[] = $selectedProduct;
-    //     }
-    //     $this->saleRestored = true;
-
-    //     // Recalculate the bill
-    //     $this->calculateBill();
-    //     $this->modal = 'hidden';
-
-    //     // Update the UI or perform any additional actions as needed
-    // }
-
-   
-
-    
