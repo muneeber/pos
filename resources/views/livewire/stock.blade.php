@@ -92,7 +92,7 @@
                         </td>
                         <td>{{ $item->retail_price }}</td>
                         <td>{{ $item->sale_price }}</td>
-                        <td class="flex flex-col  ">
+                        <td class="flex items-center justify-around  ">
                             <a wire:navigate href='{{ route('product.edit', $item->id) }}' class="btn btn-sm btn-primary rounded text-white">Edit</a>
 
                             <button wire:confirm="Are You Sure To Delete {{ $item->name }}" wire:click="delete({{ $item->id}})" class="btn btn-sm bg-red-500 hover:bg-red-700 rounded text-white">Delete</button>

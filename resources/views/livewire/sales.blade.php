@@ -60,7 +60,7 @@
                             <td>{{ $sale->discount }}</td>
                             <td>{{ $sale->total_amount }}</td>
                             <td>{{ $sale->profit }}</td>
-                            <td class=""> <button class="btn btn-sm btn-primary">Details</button></td>
+                            <td class=""> <button class="btn btn-sm btn-primary" wire:navigate href='{{ route('detail',['sale',$sale->id ] ) }}'>Details</button></td>
                         </tr>
                     @empty
                     @endforelse

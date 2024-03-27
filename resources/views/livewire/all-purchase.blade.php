@@ -31,7 +31,7 @@
                             <td>{{ $sale->user->name }}</td>
                             <td>{{ \Carbon\Carbon::parse($sale->sale_date)->format('d-m-Y') }}</td>
                             <td>{{ $sale->total_amount }}</td>
-                            <td class=""> <button class="btn btn-sm btn-primary">Details</button></td>
+                            <td class=""> <button class="btn btn-sm btn-primary" wire:navigate href='{{ route('detail',['purchase',$sale->id ] ) }}'>Details</button></td>
                         </tr>
                     @empty
                     @endforelse

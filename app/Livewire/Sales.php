@@ -25,7 +25,7 @@ class Sales extends Component
         $this->startDate = $today->subDays(3)->format('Y-m-d');
 
         // Fetch sales data within the specified date range
-        $this->sales = Sale::with('account','user')->whereBetween('sale_date', [$this->startDate, $this->endDate])->get()->map(function ($sale) {
+        $this->sales = Sale::with('account','user')->whereBetween('sale_date', [$this->startDate, $this->endDate])->orderBy('updated_at', 'desc')->get()->map(function ($sale) {
             $sale->profit = $sale->calculateProfit();
 
             // Increment sum of subtotal, total, and profit
@@ -40,7 +40,7 @@ class Sales extends Component
 
     public function byDate()
     {
-        $this->sales = Sale::with('account','user')->whereBetween('sale_date', [$this->startDate, $this->endDate])->get()->map(function ($sale) {
+        $this->sales = Sale::with('account','user')->whereBetween('sale_date', [$this->startDate, $this->endDate])->orderBy('updated_at', 'desc')->get()->map(function ($sale) {
             $sale->profit = $sale->calculateProfit();
 
             // Increment sum of subtotal, total, and profit
@@ -54,7 +54,7 @@ class Sales extends Component
 
     public function byStatus()
     {
-        $this->sales = Sale::with('account','user')->where('status', $this->status)->get()->map(function ($sale) {
+        $this->sales = Sale::with('account','user')->where('status', $this->status)->orderBy('updated_at', 'desc')->get()->map(function ($sale) {
             $sale->profit = $sale->calculateProfit();
 
             // Increment sum of subtotal, total, and profit

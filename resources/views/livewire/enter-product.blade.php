@@ -76,7 +76,11 @@
 
                     </div>
                 </div>
+              
                 <div class="sm:flex gap-x-2">
+                    @if ($place=='')
+                    
+                  
                     <div class=" w-full  ">
                         <label class="mb-2 block text-sm font-bold text-gray-700" for="name"> Quantity </label>
                         <input wire:model="qty"
@@ -87,6 +91,7 @@
                         @enderror
 
                     </div>
+                    @endif
                     <div class=" w-full  ">
                         <label class="mb-2 block text-sm font-bold text-gray-700" for="name"> Retail Price </label>
                         <input wire:model="retailPrice"

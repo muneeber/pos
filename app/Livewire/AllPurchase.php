@@ -29,7 +29,7 @@ class AllPurchase extends Component
 
         // Fetch sales data within the specified date range
 
-        $this->sales = Purchase::with('user')->whereBetween('purchase_date', [$this->startDate, $this->endDate])->get()->map(function ($sale) {
+        $this->sales = Purchase::with('user')->whereBetween('purchase_date', [$this->startDate, $this->endDate])->orderBy('purchase_date', 'desc')->get()->map(function ($sale) {
 
             // Increment sum of subtotal, total, and profit
             $this->sumSubTotal += $sale->subtotal;
@@ -43,7 +43,7 @@ class AllPurchase extends Component
 
     public function byDate()
     {
-        $this->sales = Sale::with('account', 'user')->whereBetween('sale_date', [$this->startDate, $this->endDate])->get()->map(function ($sale) {
+        $this->sales = Sale::with('account', 'user')->whereBetween('sale_date', [$this->startDate, $this->endDate])->orderBy('purchase_date', 'desc')->get()->map(function ($sale) {
             $sale->profit = $sale->calculateProfit();
 
             // Increment sum of subtotal, total, and profit

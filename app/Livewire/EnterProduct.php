@@ -13,20 +13,22 @@ class EnterProduct extends Component
     public $barcode = '';
     #[Validate('required|min:3')]
     public $name = '';
-    #[Validate('required|numeric')]
-    public $qty = '';
+    // #[Validate('required|numeric')]
+    public $qty = 0;
     #[Validate('required|numeric')]
     public $salePrice = '';
     #[Validate('required|numeric')]
     public $retailPrice = '';
-
+    public $place;
     public $shelf;
     public $category;
     public $categories;
     public $company;
     // public $test="hi";
-    public function mount()
+    public function mount($place='')
     {
+        // $this->place=$place;
+        // dd($place);
        $this->categories=(Category::all());
     }
 

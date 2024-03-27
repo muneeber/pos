@@ -26,13 +26,13 @@ class Stock extends Component
         if ($this->status == "All Stock") {
             $products = Product::all(); // Retrieve all products
         } elseif ($this->status == "In Stock") {
-            $products = Product::where('stock_quantity', '>', 0)->get(); // Retrieve products with stock_quantity greater than 0
+            $products = Product::where('stock_quantity', '>', 0)->orderBy('updated_at', 'desc')->get(); // Retrieve products with stock_quantity greater than 0
         } elseif ($this->status == "Out Stock + Almost End") {
-            $products = Product::where('stock_quantity', '=', 0)->orWhere('stock_quantity', '<', 9)->get(); // Retrieve products with stock_quantity equals to 0 or less than 9
+            $products = Product::where('stock_quantity', '=', 0)->orWhere('stock_quantity', '<', 9)->orderBy('updated_at', 'desc')->get(); // Retrieve products with stock_quantity equals to 0 or less than 9
         } elseif ($this->status == "Out Stock") {
-            $products = Product::where('stock_quantity', '=', 0)->get(); // Retrieve products with stock_quantity equals to 0
+            $products = Product::where('stock_quantity', '=', 0)->orderBy('updated_at', 'desc')->get(); // Retrieve products with stock_quantity equals to 0
         } elseif ($this->status == "Almost End") {
-            $products = Product::where('stock_quantity', '>', 0)->where('stock_quantity', '<', 9)->get(); // Retrieve products with stock_quantity greater than 0 and less than 9
+            $products = Product::where('stock_quantity', '>', 0)->where('stock_quantity', '<', 9)->orderBy('updated_at', 'desc')->get(); // Retrieve products with stock_quantity greater than 0 and less than 9
         }
         $this->products=$products;
         $this->results=(count($this->products));
@@ -59,7 +59,7 @@ class Stock extends Component
         // dd($this->search);
         if ($this->search!='') {
             # code...
-            $this->products = Product::where('name', 'like', '%' . $this->search . '%')->get();
+            $this->products = Product::where('name', 'like', '%' . $this->search . '%')->orderBy('updated_at', 'desc')->get();
             $this->results=(count($this->products));
         }else{
             $this->restore();

@@ -5,14 +5,16 @@ use Livewire\Component;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Auth;
 use Barryvdh\Debugbar\Facades\Debugbar;
 use DebugBar\DebugBar as DebugBarDebugBar;
 use Barryvdh\Debugbar\Twig\Extension\Debug;
+use PhpParser\Node\Stmt\Foreach_;
 
 class Purchased extends Component
 {
     public $barcode;
-    public $name = 'Atif';
+    public $name;
     public $todayDate;
     public $itemNPP;
     public $itemNSP;
@@ -23,11 +25,14 @@ class Purchased extends Component
     public $rows = 'grid-rows-1';
     public $btnStatus = 'hidden';
     public $selectedProducts = [];
-    public $total_amount;
-    public $state;
+    public $total_amount=0;
+    public $place='purchase';
+    public $state='hidden';
     public function mount()
     {
         $this->todayDate = (now()->format('Y-m-d'));
+        $this->name=Auth::user()->name;
+        // dd($this->name);
     }
     public function show()
     {
@@ -37,10 +42,16 @@ class Purchased extends Component
         $this->rows = 'grid-rows-2';
         $this->btnStatus = '';
     }
+    public function showadd(){
+     $this->state='';
+    }
     public function hidde()
     {
         Debugbar::addMessage('hiding input', 'warning');
         $this->reset('hide', 'expand', 'rows', 'btnStatus');
+    }
+    public function closeadd(){
+     $this->state='hidden';
     }
     public function add()
     {
@@ -116,6 +127,13 @@ class Purchased extends Component
         $this->dispatch('new');
         $this->reset('itemQty', 'barcode', 'product', 'itemNPP', 'itemNSP');
         $this->hidde();
+        $this->totalAmount();
+    }
+    public function totalAmount(){
+    foreach ($this->selectedProducts as $key => $value) {
+        # code...
+       $this->total_amount+= $value['qty']*$value['sp'];
+    }
     }
     public function item()
     {
